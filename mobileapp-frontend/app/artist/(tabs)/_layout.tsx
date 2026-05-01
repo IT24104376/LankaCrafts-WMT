@@ -4,8 +4,8 @@ import {
   Home as HomeIcon,
   Package,
   Calendar,
-  Settings,
   UserCircle,
+  Star,
 } from 'lucide-react-native';
 
 
@@ -63,6 +63,13 @@ export default function ArtistTabsLayout() {
         options={{
           title: 'Bookings',
           tabBarIcon: ({ color, size }) => <Calendar size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="reviews"
+        options={{
+          title: 'Reviews',
+          tabBarIcon: ({ color, size }) => <Star size={size} color={color} />,
         }}
       />
       <Tabs.Screen

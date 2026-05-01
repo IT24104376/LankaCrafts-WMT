@@ -7,8 +7,112 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../../src/context/AuthContext';
 import { getArtistById, getPublicCrafts } from '../../../src/services/api';
+import { reviewApi, Review } from '../../../src/services/reviewApi';
+import { aiApi, AiReviewSummary } from '../../../src/services/aiApi';
 import { BatikBackground } from '../../../src/components/BatikBackground';
-import { Star, MapPin, Calendar, ArrowLeft, ShoppingBag } from 'lucide-react-native';
+import { Star, MapPin, Calendar, ArrowLeft, ShoppingBag, MessageCircle, ThumbsUp, Plus, Bot, Sparkles } from 'lucide-react-native';
+
+const STAR_COLOR = '#C9A227';
+
+function StarRow({ rating, size = 13 }: { rating: number; size?: number }) {
+  return (
+    <View style={{ flexDirection: 'row', gap: 2 }}>
+      {[1, 2, 3, 4, 5].map(n => (
+        <Star key={n} size={size} color={STAR_COLOR} fill={n <= rating ? STAR_COLOR : 'transparent'} />
+      ))}
+    </View>
+  );
+}
+
+function AISummaryCard({
+  loading,
+  data,
+  totalReviews,
+}: {
+  loading: boolean;
+  data: AiReviewSummary | null;
+  totalReviews: number;
+}) {
+  return (
+    <View style={ai.card}>
+      <View style={ai.header}>
+        <View style={ai.iconBox}>
+          <Bot size={16} color="#fff" />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={ai.title}>AI Summary of Visitor Feedback</Text>
+          <Text style={ai.subtitle}>Generated from {totalReviews} review{totalReviews !== 1 ? 's' : ''}</Text>
+        </View>
+        <View style={ai.badge}>
+          <Sparkles size={11} color="#2F5D50" />
+          <Text style={ai.badgeText}>AI</Text>
+        </View>
+      </View>
+
+      {loading ? (
+        <View style={ai.skeleton}>
+          {[100, 88, 70].map((w, i) => (
+            <View key={i} style={[ai.skeletonLine, { width: `${w}%` as any }]} />
+          ))}
+        </View>
+      ) : data ? (
+        <View>
+          <Text style={ai.summary}>{data.summary}</Text>
+          {data.highlights && data.highlights.length > 0 && (
+            <View style={ai.tagRow}>
+              {data.highlights.map((h, i) => (
+                <View key={i} style={ai.highlightTag}>
+                  <Text style={ai.highlightText}>✓ {h}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+          {data.cautions && data.cautions.length > 0 && (
+            <View style={ai.tagRow}>
+              {data.cautions.map((c, i) => (
+                <View key={i} style={ai.cautionTag}>
+                  <Text style={ai.cautionText}>⚠ {c}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+        </View>
+      ) : (
+        <Text style={ai.emptyText}>
+          Not enough reviews yet to generate an AI summary. Be the first to share your experience!
+        </Text>
+      )}
+    </View>
+  );
+}
+
+const ai = StyleSheet.create({
+  card: {
+    backgroundColor: '#F0FDF4', borderRadius: 16, padding: 14,
+    borderWidth: 1, borderColor: '#BBF7D0', marginBottom: 12,
+  },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 10 },
+  iconBox: {
+    width: 30, height: 30, borderRadius: 9,
+    backgroundColor: '#2F5D50', alignItems: 'center', justifyContent: 'center',
+  },
+  title: { fontSize: 12, fontWeight: '700', color: '#2F5D50' },
+  subtitle: { fontSize: 10, color: '#6B7280', marginTop: 1 },
+  badge: {
+    flexDirection: 'row', alignItems: 'center', gap: 3,
+    backgroundColor: '#DCFCE7', paddingHorizontal: 7, paddingVertical: 3, borderRadius: 8,
+  },
+  badgeText: { fontSize: 10, fontWeight: '700', color: '#2F5D50' },
+  summary: { fontSize: 13, color: '#374151', lineHeight: 20 },
+  tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 5, marginTop: 7 },
+  highlightTag: { backgroundColor: '#DCFCE7', paddingHorizontal: 9, paddingVertical: 3, borderRadius: 20 },
+  highlightText: { fontSize: 10, color: '#166534', fontWeight: '600' },
+  cautionTag: { backgroundColor: '#FEF2F2', paddingHorizontal: 9, paddingVertical: 3, borderRadius: 20 },
+  cautionText: { fontSize: 10, color: '#DC2626', fontWeight: '600' },
+  skeleton: { gap: 7 },
+  skeletonLine: { height: 9, backgroundColor: '#D1FAE5', borderRadius: 5 },
+  emptyText: { fontSize: 12, color: '#9CA3AF', fontStyle: 'italic' },
+});
 
 const { width } = Dimensions.get('window');
 
@@ -19,8 +123,13 @@ export default function TouristArtistProfileScreen() {
 
   const [artist, setArtist] = useState<any>(null);
   const [crafts, setCrafts] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewStats, setReviewStats] = useState<{ totalReviews: number; overallRating: number } | null>(null);
+  const [aiSummary, setAiSummary] = useState<AiReviewSummary | null>(null);
+  const [loadingAi, setLoadingAi] = useState(false);
   const [loading, setLoading] = useState(true);
   const [craftsLoading, setCraftsLoading] = useState(true);
+  const [reviewsLoading, setReviewsLoading] = useState(true);
 
   useEffect(() => {
     if (id) {
@@ -28,6 +137,10 @@ export default function TouristArtistProfileScreen() {
       loadCrafts();
     }
   }, [id]);
+
+  useEffect(() => {
+    if (artist?.fullName) loadReviews(artist.fullName);
+  }, [artist?.fullName]);
 
   const loadArtist = async () => {
     try {
@@ -52,6 +165,33 @@ export default function TouristArtistProfileScreen() {
       console.error('Failed to load crafts:', err);
     } finally {
       setCraftsLoading(false);
+    }
+  };
+
+  const loadReviews = async (artisanName: string) => {
+    try {
+      setReviewsLoading(true);
+      const data = await reviewApi.getArtistReviews(artisanName, 'newest');
+      const fetchedReviews: Review[] = data.reviews || [];
+      setReviews(fetchedReviews);
+      setReviewStats(data.stats || null);
+
+      if (fetchedReviews.length > 0) {
+        setLoadingAi(true);
+        setAiSummary(null);
+        aiApi
+          .summarizeArtistReviews({
+            artisanName,
+            reviews: fetchedReviews.map(r => ({ rating: r.rating, text: r.text })),
+          })
+          .then(summary => setAiSummary(summary))
+          .catch(() => setAiSummary(null))
+          .finally(() => setLoadingAi(false));
+      }
+    } catch (err) {
+      console.error('Failed to load reviews:', err);
+    } finally {
+      setReviewsLoading(false);
     }
   };
 
@@ -203,6 +343,119 @@ export default function TouristArtistProfileScreen() {
             </ScrollView>
           )}
         </View>
+
+        {/* Reviews Section */}
+        <View style={s.section}>
+          <View style={s.reviewsSectionHeader}>
+            <Text style={s.sectionTitle}>
+              Reviews {reviewStats ? `(${reviewStats.totalReviews})` : ''}
+            </Text>
+            {tourist && (
+              <TouchableOpacity
+                style={s.writeReviewBtn}
+                onPress={() =>
+                  router.push({
+                    pathname: '/tourist/reviews/create',
+                    params: { artisanName: artist.fullName },
+                  })
+                }
+              >
+                <Plus size={14} color="#fff" />
+                <Text style={s.writeReviewBtnText}>Write Review</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          {/* Overall rating summary */}
+          {reviewStats && reviewStats.totalReviews > 0 && (
+            <View style={s.ratingSummary}>
+              <Text style={s.bigRating}>{reviewStats.overallRating.toFixed(1)}</Text>
+              <View>
+                <StarRow rating={Math.round(reviewStats.overallRating)} size={16} />
+                <Text style={s.totalReviewsText}>{reviewStats.totalReviews} reviews</Text>
+              </View>
+            </View>
+          )}
+
+          {/* AI Summary */}
+          {!reviewsLoading && (reviewStats?.totalReviews ?? 0) > 0 && (
+            <AISummaryCard
+              loading={loadingAi}
+              data={aiSummary}
+              totalReviews={reviewStats?.totalReviews ?? 0}
+            />
+          )}
+
+          {reviewsLoading ? (
+            <ActivityIndicator size="small" color="#2F5D50" style={{ marginTop: 16 }} />
+          ) : reviews.length === 0 ? (
+            <View style={s.emptyReviews}>
+              <Star size={40} color="#D1D5DB" fill="transparent" />
+              <Text style={s.emptyReviewsText}>No reviews yet</Text>
+              {tourist && (
+                <Text style={s.beFirstText}>Be the first to share your experience!</Text>
+              )}
+            </View>
+          ) : (
+            reviews.map(review => {
+              const reviewId = review._id || review.id || '';
+              const date = review.datePosted
+                ? new Date(review.datePosted).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })
+                : '';
+              return (
+                <View key={reviewId} style={s.reviewCard}>
+                  {/* Tourist info */}
+                  <View style={s.reviewTop}>
+                    <View style={[s.reviewAvatar, { backgroundColor: review.touristColor || '#2F5D50' }]}>
+                      <Text style={s.reviewAvatarText}>{review.touristInitials || '?'}</Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <View style={s.reviewNameRow}>
+                        <Text style={s.reviewerName}>{review.touristName}</Text>
+                        {review.countryFlag ? <Text style={{ fontSize: 13 }}>{review.countryFlag}</Text> : null}
+                      </View>
+                      <View style={s.reviewRatingRow}>
+                        <StarRow rating={review.rating} />
+                        <Text style={s.reviewDate}>{date}</Text>
+                      </View>
+                    </View>
+                  </View>
+
+                  <Text style={s.reviewText}>{review.text}</Text>
+
+                  {/* Review photos */}
+                  {review.photos && review.photos.length > 0 && (
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 8 }}>
+                      {review.photos.map((p, pi) => (
+                        <Image key={pi} source={{ uri: p.url }} style={s.reviewPhoto} />
+                      ))}
+                    </ScrollView>
+                  )}
+
+                  {/* Helpful */}
+                  <View style={s.reviewFooter}>
+                    <ThumbsUp size={11} color="#9CA3AF" />
+                    <Text style={s.reviewHelpful}>{review.helpful || 0} helpful</Text>
+                  </View>
+
+                  {/* Artisan reply */}
+                  {review.artisanReply && (
+                    <View style={s.artisanReplyBox}>
+                      <View style={s.replyHeaderRow}>
+                        <MessageCircle size={12} color="#2F5D50" />
+                        <Text style={s.replyHeaderText}>Artisan Reply</Text>
+                        <Text style={s.replyHeaderDate}>
+                          {new Date(review.artisanReply.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </Text>
+                      </View>
+                      <Text style={s.replyBodyText}>{review.artisanReply.text}</Text>
+                    </View>
+                  )}
+                </View>
+              );
+            })
+          )}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -254,4 +507,31 @@ const s = StyleSheet.create({
   craftOut: { fontSize: 11, color: '#DC2626' },
   emptyCrafts: { alignItems: 'center', paddingVertical: 40 },
   emptyCraftsText: { fontSize: 14, color: '#9CA3AF', marginTop: 8 },
+  // Reviews
+  reviewsSectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  writeReviewBtn: { flexDirection: 'row', alignItems: 'center', gap: 5, backgroundColor: '#C65D3B', paddingHorizontal: 12, paddingVertical: 7, borderRadius: 10 },
+  writeReviewBtnText: { fontSize: 12, fontWeight: '700', color: '#fff' },
+  ratingSummary: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: '#fff', borderRadius: 14, padding: 14, marginBottom: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1 },
+  bigRating: { fontSize: 40, fontWeight: '900', color: '#1E1E1E' },
+  totalReviewsText: { fontSize: 12, color: '#9CA3AF', marginTop: 4 },
+  emptyReviews: { alignItems: 'center', paddingVertical: 32 },
+  emptyReviewsText: { fontSize: 14, color: '#9CA3AF', marginTop: 10, fontWeight: '600' },
+  beFirstText: { fontSize: 13, color: '#C9A227', marginTop: 4 },
+  reviewCard: { backgroundColor: '#fff', borderRadius: 16, padding: 14, marginBottom: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1 },
+  reviewTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, marginBottom: 8 },
+  reviewAvatar: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
+  reviewAvatarText: { color: '#fff', fontSize: 14, fontWeight: '700' },
+  reviewNameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  reviewerName: { fontSize: 13, fontWeight: '700', color: '#1E1E1E' },
+  reviewRatingRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 },
+  reviewDate: { fontSize: 10, color: '#9CA3AF' },
+  reviewText: { fontSize: 13, color: '#4B5563', lineHeight: 20, marginBottom: 8 },
+  reviewPhoto: { width: 64, height: 64, borderRadius: 10, marginRight: 8, backgroundColor: '#F3F4F6' },
+  reviewFooter: { flexDirection: 'row', alignItems: 'center', gap: 4, marginBottom: 6 },
+  reviewHelpful: { fontSize: 11, color: '#9CA3AF' },
+  artisanReplyBox: { backgroundColor: '#F0FDF4', borderLeftWidth: 3, borderLeftColor: '#2F5D50', borderRadius: 10, padding: 10, marginTop: 6 },
+  replyHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 4 },
+  replyHeaderText: { fontSize: 11, fontWeight: '700', color: '#2F5D50', flex: 1 },
+  replyHeaderDate: { fontSize: 10, color: '#9CA3AF' },
+  replyBodyText: { fontSize: 12, color: '#374151', lineHeight: 18 },
 });

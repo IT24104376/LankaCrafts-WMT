@@ -13,7 +13,7 @@ const rawBaseUrl =
   API_BASE_URL ??
   process.env.EXPO_PUBLIC_API_BASE_URL ??
   process.env.API_BASE_URL ??
-  'http://localhost:5000';
+  'http://localhost:5001';
 
 const normalizedBaseUrl = rawBaseUrl.replace(/\/$/, '').replace(/\/api$/, '');
 
@@ -52,15 +52,11 @@ const getAuthToken = async (): Promise<string | null> => {
 
 // ── INTERCEPTOR ──────────────────────────────────────────
 api.interceptors.request.use(async (config) => {
-  // Admin routes: use admin_token (paths start with /auth/ or /admin/)
-  const path = config.url || '';
-  const isAdminRoute = path.startsWith('/auth/') || path.startsWith('/admin/');
-
-  if (isAdminRoute) {
-    const adminToken = await AsyncStorage.getItem('admin_token');
-    if (adminToken) {
-      config.headers.Authorization = `Bearer ${adminToken}`;
-    }
+  // If an admin session exists, use admin_token for ALL requests.
+  // Admins have no Firebase token so this won't conflict with tourist/artist auth.
+  const adminToken = await AsyncStorage.getItem('admin_token');
+  if (adminToken) {
+    config.headers.Authorization = `Bearer ${adminToken}`;
     return config;
   }
 

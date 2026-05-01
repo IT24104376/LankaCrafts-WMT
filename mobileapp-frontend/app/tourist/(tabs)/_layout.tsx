@@ -8,6 +8,7 @@ import {
   CalendarDays,
   MessageSquare,
   Bot,
+  Star,
 } from 'lucide-react-native';
 
 const TAB_COLOR_ACTIVE = '#C65D3B';
@@ -65,6 +66,13 @@ export default function TouristTabsLayout() {
         options={{
           title: 'Blogs',
           tabBarIcon: ({ color, size }) => <BookOpen size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="reviews"
+        options={{
+          title: 'Reviews',
+          tabBarIcon: ({ color, size }) => <Star size={size} color={color} />,
         }}
       />
       <Tabs.Screen

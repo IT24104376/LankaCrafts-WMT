@@ -132,6 +132,9 @@ function CTASection() {
       <TouchableOpacity onPress={() => router.push('/login')} activeOpacity={0.7}>
         <Text style={styles.ctaLogin}>Already have an account? Sign in</Text>
       </TouchableOpacity>
+      <TouchableOpacity onPress={() => router.push('/admin/login')} activeOpacity={0.7} style={styles.adminLink}>
+        <Text style={styles.adminLinkText}>🛡 Admin Portal</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -343,5 +346,18 @@ const styles = StyleSheet.create({
   ctaLogin: {
     fontSize: 13,
     color: 'rgba(255,255,255,0.6)',
+  },
+  adminLink: {
+    marginTop: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+  },
+  adminLinkText: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.5)',
+    fontWeight: '600',
   },
 });

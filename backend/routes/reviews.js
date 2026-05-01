@@ -17,7 +17,7 @@ router.get('/', optionalVerifyAnyFirebaseToken, getReviews);
 router.get('/admin', protect, getAdminReviews);
 router.post('/', verifyAnyFirebaseToken, createReview);
 router.patch('/:id', verifyAnyFirebaseToken, updateReview);
-router.delete('/:id', verifyAnyFirebaseToken, deleteReview);
+router.delete('/:id', protect, deleteReview);
 router.post('/:id/reply', verifyAnyFirebaseToken, replyToReview);
 router.post('/:id/helpful', verifyAnyFirebaseToken, markHelpful);
 router.post('/:id/moderate', protect, moderateReview);
