@@ -27,7 +27,16 @@ export default function EditBooking() {
         fetchBooking();
     }, [id]);
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const minDateString = today.toISOString().split('T')[0];
+
     const handleSubmit = async () => {
+        const selected = new Date(formData.bookingDate);
+        if (selected < today) {
+            Alert.alert('Invalid Date', 'Please select a future date.');
+            return;
+        }
         try {
             setError(null);
             await bookingApi.updateBooking(id, formData);
@@ -54,10 +63,24 @@ export default function EditBooking() {
             <TextInput
                 style={styles.input}
                 value={formData.bookingDate}
-                onChangeText={(v) => setFormData({ ...formData, bookingDate: v })}
+                onChangeText={(v) => {
+                    setFormData({ ...formData, bookingDate: v });
+                    if (v.length === 10) {
+                        const selected = new Date(v);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        if (selected < today) {
+                            Alert.alert('Invalid Date', 'Please select a future date.');
+                            setFormData({ ...formData, bookingDate: '' });
+                        }
+                    }
+                }}
                 placeholder="YYYY-MM-DD"
                 placeholderTextColor="#aaa"
             />
+            <Text style={{ fontSize: 11, color: '#888', marginBottom: 16, marginTop: -12 }}>
+                Minimum date: {new Date().toISOString().split('T')[0]}
+            </Text>
 
             <Text style={styles.label}>Booking Time</Text>
             <TextInput
