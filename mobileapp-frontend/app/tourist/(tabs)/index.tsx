@@ -5,9 +5,10 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import MapView, { Marker } from 'react-native-maps';
 import { useAuth } from '../../../src/context/AuthContext';
 import { getArtists, getFeaturedArtist } from '../../../src/services/api';
-import { Search, MapPin, Star, ArrowRight, Heart } from 'lucide-react-native';
+import { Search, MapPin, Star, Heart } from 'lucide-react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -151,15 +152,35 @@ export default function TouristHomeScreen() {
           </View>
         )}
 
-        {/* Map Teaser */}
-        <View style={s.mapTeaser}>
-          <MapPin size={24} color="#C9A227" />
-          <Text style={s.mapTitle}>Explore on the Map</Text>
-          <Text style={s.mapSubtitle}>Discover artisan workshops across Sri Lanka</Text>
-          <TouchableOpacity style={s.mapBtn} onPress={() => router.push('/tourist/(tabs)/dashboard')} activeOpacity={0.8}>
-            <Text style={s.mapBtnText}>Open Dashboard Map</Text>
-            <ArrowRight size={16} color="#2F5D50" />
-          </TouchableOpacity>
+        {/* Interactive Map */}
+        <View style={s.section}>
+          <Text style={s.sectionTag}>DISCOVER</Text>
+          <Text style={s.sectionTitle}>Explore on the Map</Text>
+          <View style={s.mapContainer}>
+            <MapView
+              style={s.map}
+              initialRegion={{
+                latitude: 7.8731,
+                longitude: 80.7718,
+                latitudeDelta: 4.5,
+                longitudeDelta: 4.5,
+              }}
+            >
+              {artists
+                .filter((a: any) => a.location?.coordinates?.length === 2 && a.location.coordinates[0] !== 0)
+                .map((a: any) => (
+                  <Marker
+                    key={a._id}
+                    coordinate={{
+                      latitude: a.location.coordinates[1],
+                      longitude: a.location.coordinates[0],
+                    }}
+                    title={a.fullName || a.callingName}
+                    description={`${a.craftType} — ${a.address?.city || 'Sri Lanka'}`}
+                  />
+                ))}
+            </MapView>
+          </View>
         </View>
 
         {loading && <ActivityIndicator size="large" color="#C65D3B" style={{ marginTop: 24 }} />}
@@ -208,9 +229,6 @@ const s = StyleSheet.create({
   artisanCraft: { fontSize: 11, color: '#9CA3AF', marginBottom: 4 },
   artisanRating: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   artisanRatingText: { fontSize: 12, fontWeight: '600', color: '#1E1E1E' },
-  mapTeaser: { alignItems: 'center', backgroundColor: '#2F5D50', margin: 20, borderRadius: 24, padding: 28 },
-  mapTitle: { fontSize: 20, fontWeight: '800', color: '#fff', marginTop: 12, marginBottom: 6 },
-  mapSubtitle: { fontSize: 13, color: 'rgba(255,255,255,0.6)', marginBottom: 20, textAlign: 'center' },
-  mapBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#C9A227', paddingVertical: 12, paddingHorizontal: 24, borderRadius: 14 },
-  mapBtnText: { fontSize: 13, fontWeight: '700', color: '#2F5D50' },
+  mapContainer: { height: 280, borderRadius: 20, overflow: 'hidden', borderWidth: 1, borderColor: '#F0F0F0' },
+  map: { width: '100%', height: '100%' },
 });

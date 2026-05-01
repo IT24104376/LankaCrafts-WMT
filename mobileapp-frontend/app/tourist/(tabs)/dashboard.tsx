@@ -165,7 +165,7 @@ export default function TouristDashboardScreen() {
         <View style={s.section}>
           <View style={s.sectionHeader}>
             <Text style={s.sectionTitle}>Upcoming Bookings</Text>
-            {upcoming.length > 0 && <Text style={s.seeAll}>See All</Text>}
+            {upcoming.length > 0 && <TouchableOpacity onPress={() => router.push('/tourist/bookings')}><Text style={s.seeAll}>See All</Text></TouchableOpacity>}
           </View>
           {upcoming.length === 0 ? (
             <View style={s.emptyCard}>
@@ -251,9 +251,9 @@ export default function TouristDashboardScreen() {
           <Text style={s.sectionTitle}>Quick Actions</Text>
           <View style={s.quickGrid}>
             {[
-              { label: 'Write Blog', emoji: '✍️', color: '#2F5D50', bg: '#EBF4F1', route: '/tourist/blogs' },
+              { label: 'Write Blog', emoji: '✍️', color: '#2F5D50', bg: '#EBF4F1', route: '/tourist/blog-create/blog-create' },
               { label: 'Browse Artisans', emoji: '🎨', color: '#C65D3B', bg: '#FEF0EB', route: '/tourist/browse' },
-              { label: 'My Reviews', emoji: '⭐', color: '#C9A227', bg: '#FDF8E7', route: '/tourist/profile' },
+              { label: 'My Reviews', emoji: '⭐', color: '#C9A227', bg: '#FDF8E7', route: '/tourist/reviews' },
               { label: 'Edit Profile', emoji: '👤', color: '#6366F1', bg: '#EEF2FF', route: '/tourist/profile-edit' },
             ].map(q => (
               <TouchableOpacity key={q.label} style={[s.quickCard, { backgroundColor: q.bg }]} activeOpacity={0.7} onPress={() => router.push(q.route)}>
@@ -279,7 +279,7 @@ const s = StyleSheet.create({
   bannerAvatarImg: { width: 52, height: 52, borderRadius: 16 },
   bannerAvatarText: { fontSize: 18, fontWeight: '700', color: '#C9A227' },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 16, marginTop: 16, gap: 10 },
-  statCard: { width: (width - 42) / 2, backgroundColor: '#fff', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#F0F0F0' },
+  statCard: { width: (width - 42) / 2, backgroundColor: '#f6fffafd', borderRadius: 16, padding: 16, borderWidth: 1, borderColor: '#F0F0F0' },
   statIcon: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginBottom: 10 },
   statValue: { fontSize: 24, fontWeight: '800', color: '#1E1E1E', marginBottom: 2 },
   statLabel: { fontSize: 12, color: '#9CA3AF', fontWeight: '500' },
