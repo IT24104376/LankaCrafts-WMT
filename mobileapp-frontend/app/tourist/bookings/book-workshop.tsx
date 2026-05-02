@@ -66,6 +66,14 @@ export default function BookWorkshop() {
         if (!/^[0-9]{10}$/.test(formData.phone)) { Alert.alert('Error', 'Phone must be 10 digits'); return; }
         if (!selectedDate || !selectedTime) { Alert.alert('Error', 'Please select date and time'); return; }
 
+        const selected = new Date(selectedDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (selected < today) {
+            Alert.alert('Invalid Date', 'Please select a future date.');
+            return;
+        }
+
         setIsSubmitting(true);
         const artisanData = allArtists.find(a => (a._id || a.id) === selectedArtisan);
         const craftData = craftCategories.find(c => c.id === selectedCraft);
@@ -198,10 +206,25 @@ export default function BookWorkshop() {
                     <TextInput
                         style={styles.input}
                         value={selectedDate}
-                        onChangeText={setSelectedDate}
+                        onChangeText={(v) => {
+                            setSelectedDate(v);
+                            // Validate date is not in the past
+                            if (v.length === 10) {
+                                const selected = new Date(v);
+                                const today = new Date();
+                                today.setHours(0, 0, 0, 0);
+                                if (selected < today) {
+                                    Alert.alert('Invalid Date', 'Please select a future date.');
+                                    setSelectedDate('');
+                                }
+                            }
+                        }}
                         placeholder="e.g. 2026-05-10"
                         placeholderTextColor="#aaa"
                     />
+                    <Text style={{ fontSize: 11, color: '#888', marginBottom: 16, marginTop: -12 }}>
+                        Minimum date: {new Date().toISOString().split('T')[0]}
+                    </Text>
                     <Text style={styles.label}>Available Slots</Text>
                     <View style={styles.timeGrid}>
                         {AVAILABLE_TIMES.map(slot => (
