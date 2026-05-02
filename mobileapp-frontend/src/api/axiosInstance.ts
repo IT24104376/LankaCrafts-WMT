@@ -11,8 +11,7 @@ const rawBaseUrl =
   EXPO_PUBLIC_API_BASE_URL ??
   API_BASE_URL ??
   process.env.EXPO_PUBLIC_API_BASE_URL ??
-  process.env.API_BASE_URL ??
-  'http://localhost:5000';
+  process.env.API_BASE_URL;
 
 const normalizedBaseUrl = rawBaseUrl.replace(/\/$/, '').replace(/\/api$/, '');
 
@@ -21,7 +20,7 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
-console.log('🔗 [axiosInstance] Configured API baseURL:', api.defaults.baseURL);
+// console.log('🔗 [axiosInstance] Configured API baseURL:', api.defaults.baseURL);
 
 // ── RELIABLE TOKEN GETTER ──────────────────────────────────
 const getAuthToken = async (): Promise<string | null> => {
