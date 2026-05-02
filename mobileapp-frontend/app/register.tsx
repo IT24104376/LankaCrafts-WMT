@@ -16,7 +16,7 @@ const ROLES = [
   },
   {
     key: 'artist', label: 'Artist', tag: 'Artisan', Icon: Palette,
-    color: '#2F5D50', bg: '#EBF4F1', route: '/' as const, popular: true,
+    color: '#2F5D50', bg: '#EBF4F1', route: '/artist/register' as const, popular: true,
     desc: 'Showcase your craft, host workshops for tourists, and grow your artisan business.',
     features: ['Create your artisan profile', 'Host & manage workshops', 'Chat with tourists'],
   },
