@@ -16,6 +16,7 @@ import {
   SUGGESTED_QUESTIONS,
   getChatbotReply,
 } from '../../../src/services/chatbotFaq';
+import { BatikBackground } from '../../../src/components/BatikBackground';
 
 type UiMessage = {
   id: string;
@@ -74,7 +75,8 @@ export default function TouristChatbotScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <BatikBackground>
+      <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -180,14 +182,15 @@ export default function TouristChatbotScreen() {
           </Pressable>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </BatikBackground>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F6F3EE',
+    backgroundColor: 'transparent',
   },
   container: {
     flex: 1,

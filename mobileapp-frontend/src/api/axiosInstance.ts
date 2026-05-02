@@ -40,6 +40,10 @@ api.interceptors.request.use(async (config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  const adminToken = await AsyncStorage.getItem('admin_token');
+  if (adminToken) {
+    config.headers.Authorization = `Bearer ${adminToken}`;
+  }
 
   // Set actor headers (required by Reviews API)
   const sessionUserRaw = await AsyncStorage.getItem('lankaCraftAuthUser');

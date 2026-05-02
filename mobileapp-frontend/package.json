@@ -1,5 +1,5 @@
 {
-  "name": "wmt-mobileapp-frontend",
+  "name": "mobileapp-frontend",
   "version": "1.0.0",
   "main": "expo-router/entry",
   "scripts": {

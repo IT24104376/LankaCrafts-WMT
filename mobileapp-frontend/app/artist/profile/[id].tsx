@@ -8,7 +8,8 @@ import { getArtistProfile, updateArtistProfile, uploadProfilePic } from '../../.
 import { BatikBackground } from '../../../src/components/BatikBackground';
 import { Camera, Image as ImageIcon, X, LogOut } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { getArtistById } from '../../../src/services/api';
 import {
   User, Contact, Mail, Lock, Check, Globe,
   CreditCard, Calendar, Home, MapPin, ArrowRight, ArrowLeft,
@@ -16,12 +17,14 @@ import {
 
 export default function ArtistProfileScreen() {
   const { artist, refreshArtist, logoutArtist } = useAuth();
+  const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [profile, setProfile] = useState<any>(null);
   const [editing, setEditing] = useState(false);
+  const isOwnProfile = !id || id === artist?.id;
   const [form, setForm] = useState({
     fullName: '',
     callingName: '',
@@ -56,14 +59,14 @@ export default function ArtistProfileScreen() {
   };
 
   useEffect(() => {
-    if (artist?.id) loadProfile();
-  }, [artist?.id]);
+    loadProfile();
+  }, [id, artist?.id]);
 
   const loadProfile = async () => {
     try {
       setLoading(true);
-      const res = await getArtistProfile();
-      const data = res.data?.data || res.data?.artist;
+      const res = (id && id !== artist?.id) ? await getArtistById(id) : await getArtistProfile();
+      const data = res.data?.data || res.data?.artist || res.data;
       if (data) {
         setProfile(data);
         setForm({
@@ -154,13 +157,20 @@ export default function ArtistProfileScreen() {
   return (
     <View style={s.safe}>
       <BatikBackground />
-      {/* Header with Logout */}
+      {/* Header with Logout (only if own profile) */}
       <View style={s.header}>
-        <Text style={s.headerTitle}>My Profile</Text>
-        <TouchableOpacity style={s.logoutBtn} onPress={handleLogout}>
-          <LogOut size={20} color="#DC2626" />
-          <Text style={s.logoutText}>Logout</Text>
+        <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
+          <ArrowLeft size={20} color="#1E1E1E" />
         </TouchableOpacity>
+        <Text style={s.headerTitle}>{isOwnProfile ? 'My Profile' : 'Artist Profile'}</Text>
+        {isOwnProfile ? (
+          <TouchableOpacity style={s.logoutBtn} onPress={handleLogout}>
+            <LogOut size={20} color="#DC2626" />
+            <Text style={s.logoutText}>Logout</Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={{ width: 40 }} />
+        )}
       </View>
 
       <ScrollView contentContainerStyle={s.content}>
@@ -196,9 +206,11 @@ export default function ArtistProfileScreen() {
                   <Text style={s.name}>{form.fullName || 'Unknown'}</Text>
                   <Text style={s.handle}>@{form.callingName || form.fullName?.toLowerCase().replace(/\s+/g, '') || 'unknown'}</Text>
                 </View>
-                <TouchableOpacity style={s.editBtn} onPress={() => setEditing(true)}>
-                  <Text style={s.editBtnText}>Edit</Text>
-                </TouchableOpacity>
+                {isOwnProfile && (
+                  <TouchableOpacity style={s.editBtn} onPress={() => setEditing(true)}>
+                    <Text style={s.editBtnText}>Edit</Text>
+                  </TouchableOpacity>
+                )}
               </View>
 
               <View style={s.row}>
@@ -305,7 +317,8 @@ export default function ArtistProfileScreen() {
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#ddede7' },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 16, paddingBottom: 12, marginTop: 20 },
-  headerTitle: { fontSize: 22, fontWeight: '800', color: '#1E1E1E' },
+  headerTitle: { fontSize: 22, fontWeight: '800', color: '#1E1E1E', flex: 1, textAlign: 'center' },
+  backBtn: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F3F4F6' },
   logoutBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12, backgroundColor: '#FEF2F2' },
   logoutText: { fontSize: 13, fontWeight: '600', color: '#DC2626' },
   loading: { flex: 1, justifyContent: 'center', alignItems: 'center' },

@@ -4,8 +4,8 @@ import {
   Home as HomeIcon,
   Package,
   Calendar,
-  Settings,
   UserCircle,
+  Star,
 } from 'lucide-react-native';
 
 
@@ -25,18 +25,18 @@ export default function ArtistTabsLayout() {
           tabBarStyle: hideTabBar
             ? { display: 'none' }
             : {
-                backgroundColor: '#fff',
-                borderTopWidth: 1,
-                borderTopColor: '#F0F0F0',
-                height: 68,
-                paddingBottom: 8,
-                paddingTop: 6,
-                elevation: 10,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: -2 },
-                shadowOpacity: 0.06,
-                shadowRadius: 8,
-              },
+              backgroundColor: '#fff',
+              borderTopWidth: 1,
+              borderTopColor: '#F0F0F0',
+              height: 68,
+              paddingBottom: 8,
+              paddingTop: 6,
+              elevation: 10,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: -2 },
+              shadowOpacity: 0.06,
+              shadowRadius: 8,
+            },
           tabBarLabelStyle: {
             fontSize: 11,
             fontWeight: '600',
@@ -63,6 +63,13 @@ export default function ArtistTabsLayout() {
         options={{
           title: 'Bookings',
           tabBarIcon: ({ color, size }) => <Calendar size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="reviews"
+        options={{
+          title: 'Reviews',
+          tabBarIcon: ({ color, size }) => <Star size={size} color={color} />,
         }}
       />
       <Tabs.Screen

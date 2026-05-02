@@ -18,6 +18,8 @@ export default function RootLayout() {
         <Stack.Screen name="login" />
         <Stack.Screen name="register" />
         <Stack.Screen name="tourist" />
+        <Stack.Screen name="artist" />
+        <Stack.Screen name="admin" />
       </Stack>
     </AuthProvider>
   );

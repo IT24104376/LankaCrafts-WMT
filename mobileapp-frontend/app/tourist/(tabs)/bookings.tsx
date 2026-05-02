@@ -7,6 +7,8 @@ import {
     StyleSheet, ActivityIndicator, Alert, TextInput, RefreshControl
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { BatikBackground } from '../../../src/components/BatikBackground';
 interface Booking {
     _id: string; craftId: string; craftName: string;
     artisanId: string; customerName: string;
@@ -73,95 +75,98 @@ export default function MyBookings() {
     );
 
     return (
+        <BatikBackground>
+            <SafeAreaView style={{ flex: 1 }}>
+                <ScrollView
+                    style={styles.container}
+                    contentContainerStyle={styles.content}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchBookings(); }} />}>
 
-        <ScrollView
-            style={styles.container}
-            contentContainerStyle={styles.content}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchBookings(); }} />}>
-
-            <View style={styles.header}>
-                <Text style={styles.title}>My Craft Journey</Text>
-                <TouchableOpacity onPress={fetchBookings} style={styles.refreshBtn}>
-                    <Text style={styles.refreshText}>↻</Text>
-                </TouchableOpacity>
-            </View>
-
-            {bookings.length === 0 ? (
-                <View style={styles.emptyBox}>
-                    <Text style={styles.emptyText}>No bookings found. Ready to start your first masterclass?</Text>
-                </View>
-            ) : (
-                bookings.map((booking) => (
-                    <View key={booking._id} style={styles.card}>
-                        <View style={styles.cardTop}>
-                            <Text style={styles.craftTag}>{booking.craftId}</Text>
-                            <View style={[styles.statusBadge,
-                            booking.status === 'confirmed' ? styles.statusConfirmed : styles.statusPending]}>
-                                <Text style={styles.statusText}>{booking.status}</Text>
-                            </View>
-                        </View>
-
-                        <Text style={styles.cardLabel}>Artisan: <Text style={styles.cardValue}>{booking.artisanId}</Text></Text>
-                        <Text style={styles.cardLabel}>Tourist: <Text style={styles.cardValue}>{booking.customerName}</Text></Text>
-                        <Text style={styles.cardLabel}>Workshop: <Text style={styles.cardValue}>{booking.craftName || booking.craftId}</Text></Text>
-
-                        {editingId === booking._id ? (
-                            <View style={styles.editRow}>
-                                <TextInput
-                                    style={styles.editInput}
-                                    value={editData.bookingDate}
-                                    onChangeText={(v) => setEditData({ ...editData, bookingDate: v })}
-                                    placeholder="YYYY-MM-DD"
-                                    placeholderTextColor="#aaa"
-                                />
-                                <TextInput
-                                    style={styles.editInput}
-                                    value={editData.bookingTime}
-                                    onChangeText={(v) => setEditData({ ...editData, bookingTime: v })}
-                                    placeholder="HH:MM"
-                                    placeholderTextColor="#aaa"
-                                />
-                                <View style={styles.editActions}>
-                                    <TouchableOpacity style={styles.saveBtn} onPress={() => handleUpdate(booking._id)}>
-                                        <Text style={styles.saveBtnText}>✓ Save</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.cancelEditBtn} onPress={() => setEditingId(null)}>
-                                        <Text style={styles.cancelEditText}>✕</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        ) : (
-                            <View style={styles.dateRow}>
-                                <Text style={styles.dateText}>📅 {booking.bookingDate}</Text>
-                                <Text style={styles.dateText}>🕐 {booking.bookingTime}</Text>
-                            </View>
-                        )}
-
-                        {editingId !== booking._id && (
-                            <View style={styles.actions}>
-                                <TouchableOpacity
-                                    style={styles.editBtn}
-                                    onPress={() => router.push(`/tourist/bookings/${booking._id}`)}>
-                                    <Text style={styles.editBtnText}>✏️ Edit</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={styles.deleteBtn}
-                                    onPress={() => handleDelete(booking._id)}>
-                                    <Text style={styles.deleteBtnText}>🗑 Cancel</Text>
-                                </TouchableOpacity>
-                            </View>
-                        )}
+                    <View style={styles.header}>
+                        <Text style={styles.title}>My Craft Journey</Text>
+                        <TouchableOpacity onPress={fetchBookings} style={styles.refreshBtn}>
+                            <Text style={styles.refreshText}>↻</Text>
+                        </TouchableOpacity>
                     </View>
-                ))
-            )}
-        </ScrollView>
+
+                    {bookings.length === 0 ? (
+                        <View style={styles.emptyBox}>
+                            <Text style={styles.emptyText}>No bookings found. Ready to start your first masterclass?</Text>
+                        </View>
+                    ) : (
+                        bookings.map((booking) => (
+                            <View key={booking._id} style={styles.card}>
+                                <View style={styles.cardTop}>
+                                    <Text style={styles.craftTag}>{booking.craftId}</Text>
+                                    <View style={[styles.statusBadge,
+                                    booking.status === 'confirmed' ? styles.statusConfirmed : styles.statusPending]}>
+                                        <Text style={styles.statusText}>{booking.status}</Text>
+                                    </View>
+                                </View>
+
+                                <Text style={styles.cardLabel}>Artisan: <Text style={styles.cardValue}>{booking.artisanId}</Text></Text>
+                                <Text style={styles.cardLabel}>Tourist: <Text style={styles.cardValue}>{booking.customerName}</Text></Text>
+                                <Text style={styles.cardLabel}>Workshop: <Text style={styles.cardValue}>{booking.craftName || booking.craftId}</Text></Text>
+
+                                {editingId === booking._id ? (
+                                    <View style={styles.editRow}>
+                                        <TextInput
+                                            style={styles.editInput}
+                                            value={editData.bookingDate}
+                                            onChangeText={(v) => setEditData({ ...editData, bookingDate: v })}
+                                            placeholder="YYYY-MM-DD"
+                                            placeholderTextColor="#aaa"
+                                        />
+                                        <TextInput
+                                            style={styles.editInput}
+                                            value={editData.bookingTime}
+                                            onChangeText={(v) => setEditData({ ...editData, bookingTime: v })}
+                                            placeholder="HH:MM"
+                                            placeholderTextColor="#aaa"
+                                        />
+                                        <View style={styles.editActions}>
+                                            <TouchableOpacity style={styles.saveBtn} onPress={() => handleUpdate(booking._id)}>
+                                                <Text style={styles.saveBtnText}>✓ Save</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity style={styles.cancelEditBtn} onPress={() => setEditingId(null)}>
+                                                <Text style={styles.cancelEditText}>✕</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                ) : (
+                                    <View style={styles.dateRow}>
+                                        <Text style={styles.dateText}>📅 {booking.bookingDate}</Text>
+                                        <Text style={styles.dateText}>🕐 {booking.bookingTime}</Text>
+                                    </View>
+                                )}
+
+                                {editingId !== booking._id && (
+                                    <View style={styles.actions}>
+                                        <TouchableOpacity
+                                            style={styles.editBtn}
+                                            onPress={() => router.push(`/tourist/bookings/${booking._id}`)}>
+                                            <Text style={styles.editBtnText}>✏️ Edit</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={styles.deleteBtn}
+                                            onPress={() => handleDelete(booking._id)}>
+                                            <Text style={styles.deleteBtnText}>🗑 Cancel</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                            </View>
+                        ))
+                    )}
+                </ScrollView>
+            </SafeAreaView>
+        </BatikBackground>
     );
 }
 
 const styles = StyleSheet.create({
     centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     loadingText: { marginTop: 12, color: '#888' },
-    container: { flex: 1, backgroundColor: '#fafaf9' },
+    container: { flex: 1, backgroundColor: 'transparent' },
     content: { padding: 20, paddingTop: 60, paddingBottom: 40 },
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, borderBottomWidth: 1, borderBottomColor: '#e7e5e4', paddingBottom: 12 },
     title: { fontSize: 26, fontStyle: 'italic', fontWeight: '700', color: '#1c1917' },
