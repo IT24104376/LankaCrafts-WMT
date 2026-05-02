@@ -19,50 +19,50 @@ export default function ArtistBookingsScreen() {
     if (artist?.id) loadBookings();
   }, [artist?.id]);
 
-   const loadBookings = async () => {
-     try {
-       setLoading(true);
-       const res = await getArtistBookings();
-       const bookingsArray = res?.data?.data ?? [];
-       setBookings(Array.isArray(bookingsArray) ? bookingsArray : []);
-     } catch (err) {
-       console.error('Failed to load bookings:', err);
-       Alert.alert('Error', 'Failed to load bookings');
-       setBookings([]);
-     } finally {
-       setLoading(false);
-     }
-   };
+  const loadBookings = async () => {
+    try {
+      setLoading(true);
+      const res = await getArtistBookings();
+      const bookingsArray = res?.data?.data ?? [];
+      setBookings(Array.isArray(bookingsArray) ? bookingsArray : []);
+    } catch (err) {
+      console.error('Failed to load bookings:', err);
+      Alert.alert('Error', 'Failed to load bookings');
+      setBookings([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-   const updateStatus = async (id: string, status: string) => {
-     try {
-       await bookingApi.updateBooking(id, { status });
-       loadBookings();
-     } catch (err) {
-       Alert.alert('Error', 'Failed to update booking status');
-       console.error('Update error:', err);
-     }
-   };
+  const updateStatus = async (id: string, status: string) => {
+    try {
+      await bookingApi.updateBooking(id, { status });
+      loadBookings();
+    } catch (err) {
+      Alert.alert('Error', 'Failed to update booking status');
+      console.error('Update error:', err);
+    }
+  };
 
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'confirmed': return '#22C55E';
-    case 'pending': return '#F59E0B';
-    case 'completed': return '#3B82F6';
-    case 'cancelled': return '#EF4444';
-    default: return '#9CA3AF';
-  }
-};
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'confirmed': return '#22C55E';
+      case 'pending': return '#F59E0B';
+      case 'completed': return '#3B82F6';
+      case 'cancelled': return '#EF4444';
+      default: return '#9CA3AF';
+    }
+  };
 
-const getStatusLabel = (status: string) => {
-  switch (status) {
-    case 'confirmed': return 'Confirmed';
-    case 'pending': return 'Pending';
-    case 'completed': return 'Completed';
-    case 'cancelled': return 'Cancelled';
-    default: return status;
-  }
-};
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'confirmed': return 'Confirmed';
+      case 'pending': return 'Pending';
+      case 'completed': return 'Completed';
+      case 'cancelled': return 'Cancelled';
+      default: return status;
+    }
+  };
 
   const filteredBookings = bookings.filter((b: any) => {
     if (filter === 'all') return true;
@@ -158,44 +158,46 @@ const getStatusLabel = (status: string) => {
         </View>
       )}
     </View>
-  );  
+  );
 
   if (loading) {
     return (
       <View style={s.safe}>
-        <BatikBackground />
-        <View style={s.center}><ActivityIndicator size="large" color="#2F5D50" /></View>
+        <BatikBackground>
+          <View style={s.center}><ActivityIndicator size="large" color="#2F5D50" /></View>
+        </BatikBackground>
       </View>
     );
   }
 
   return (
     <View style={s.safe}>
-      <BatikBackground />
-      <ScrollView contentContainerStyle={s.content}>
-        <View style={s.statsRow}>
-          <View style={s.statCard}><Text style={s.statNum}>{stats.total}</Text><Text style={s.statLabel}>Total</Text></View>
-          <View style={s.statCard}><Text style={[s.statNum, { color: '#F59E0B' }]}>{stats.pending}</Text><Text style={s.statLabel}>Pending</Text></View>
-          <View style={s.statCard}><Text style={[s.statNum, { color: '#22C55E' }]}>{stats.confirmed}</Text><Text style={s.statLabel}>Confirmed</Text></View>
-          <View style={s.statCard}><Text style={[s.statNum, { color: '#3B82F6' }]}>{stats.completed}</Text><Text style={s.statLabel}>Done</Text></View>
-          <View style={s.statCard}><Text style={[s.statNum, { color: '#EF4444' }]}>{stats.cancelled}</Text><Text style={s.statLabel}>Cancelled</Text></View>
-        </View>
-        <View style={s.filterRow}>
-          {['all', 'pending', 'confirmed', 'completed', 'cancelled'].map(f => (
-            <TouchableOpacity key={f} style={[s.filterBtn, filter === f && s.filterBtnActive]} onPress={() => setFilter(f)}>
-              <Text style={[s.filterText, filter === f && s.filterTextActive]}>{f.charAt(0).toUpperCase() + f.slice(1)}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-        {filteredBookings.length === 0 ? (
-          <View style={s.emptyCard}>
-            <Text style={s.emptyText}>No bookings yet</Text>
-            <Text style={s.emptySub}>Your workshop bookings will appear here</Text>
+      <BatikBackground>
+        <ScrollView contentContainerStyle={s.content}>
+          <View style={s.statsRow}>
+            <View style={s.statCard}><Text style={s.statNum}>{stats.total}</Text><Text style={s.statLabel}>Total</Text></View>
+            <View style={s.statCard}><Text style={[s.statNum, { color: '#F59E0B' }]}>{stats.pending}</Text><Text style={s.statLabel}>Pending</Text></View>
+            <View style={s.statCard}><Text style={[s.statNum, { color: '#22C55E' }]}>{stats.confirmed}</Text><Text style={s.statLabel}>Confirmed</Text></View>
+            <View style={s.statCard}><Text style={[s.statNum, { color: '#3B82F6' }]}>{stats.completed}</Text><Text style={s.statLabel}>Done</Text></View>
+            <View style={s.statCard}><Text style={[s.statNum, { color: '#EF4444' }]}>{stats.cancelled}</Text><Text style={s.statLabel}>Cancelled</Text></View>
           </View>
-        ) : (
-          <FlatList data={filteredBookings} renderItem={renderBooking} keyExtractor={(item) => item._id} scrollEnabled={false} />
-        )}
-      </ScrollView>
+          <View style={s.filterRow}>
+            {['all', 'pending', 'confirmed', 'completed', 'cancelled'].map(f => (
+              <TouchableOpacity key={f} style={[s.filterBtn, filter === f && s.filterBtnActive]} onPress={() => setFilter(f)}>
+                <Text style={[s.filterText, filter === f && s.filterTextActive]}>{f.charAt(0).toUpperCase() + f.slice(1)}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+          {filteredBookings.length === 0 ? (
+            <View style={s.emptyCard}>
+              <Text style={s.emptyText}>No bookings yet</Text>
+              <Text style={s.emptySub}>Your workshop bookings will appear here</Text>
+            </View>
+          ) : (
+            <FlatList data={filteredBookings} renderItem={renderBooking} keyExtractor={(item) => item._id} scrollEnabled={false} />
+          )}
+        </ScrollView>
+      </BatikBackground>
     </View>
   );
 }

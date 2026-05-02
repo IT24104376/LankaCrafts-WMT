@@ -83,8 +83,8 @@ export default function ArtistCraftsScreen() {
           type,
         };
       });
-      setForm({ 
-        ...form, 
+      setForm({
+        ...form,
         images: [...form.images, ...newImages],
         mediaFiles: [...form.mediaFiles, ...newMediaFiles]
       });
@@ -92,8 +92,8 @@ export default function ArtistCraftsScreen() {
   };
 
   const removeImage = (index: number) => {
-    setForm({ 
-      ...form, 
+    setForm({
+      ...form,
       images: form.images.filter((_, i) => i !== index),
       mediaFiles: form.mediaFiles.filter((_, i) => i !== index)
     });
@@ -135,10 +135,10 @@ export default function ArtistCraftsScreen() {
         } as any);
       });
 
-      const apiCall = editingCraft 
+      const apiCall = editingCraft
         ? updateCraft(editingCraft._id, formData)
         : createCraft(formData);
-      
+
       await apiCall;
       Alert.alert('Success', editingCraft ? 'Craft updated' : 'Craft created');
       setShowModal(false);
@@ -255,284 +255,286 @@ export default function ArtistCraftsScreen() {
   if (loading) {
     return (
       <View style={s.safe}>
-        <BatikBackground />
-        <View style={s.center}>
-          <ActivityIndicator size="large" color="#2F5D50" />
-        </View>
+        <BatikBackground>
+          <View style={s.center}>
+            <ActivityIndicator size="large" color="#2F5D50" />
+          </View>
+        </BatikBackground>
       </View>
     );
   }
 
   return (
     <View style={s.safe}>
-      <BatikBackground />
-      <ScrollView contentContainerStyle={[s.detailBody, { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 40 }]} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-        <View style={s.header}>
-          <Text style={s.headerTitle}>My Crafts</Text>
-          <TouchableOpacity style={s.addBtn} onPress={openAdd}>
-            <Plus size={20} color="#fff" />
-            <Text style={s.addBtnText}>Add Craft</Text>
-          </TouchableOpacity>
-        </View>
-
-        {crafts.length === 0 ? (
-          <View style={s.emptyCard}>
-            <Text style={s.emptyText}>No crafts listed yet</Text>
-            <Text style={s.emptySub}>Start showcasing your traditional crafts</Text>
-            <TouchableOpacity style={s.emptyBtn} onPress={openAdd}>
-              <Text style={s.emptyBtnText}>Add Your First Craft</Text>
+      <BatikBackground>
+        <ScrollView contentContainerStyle={[s.detailBody, { paddingTop: insets.top + 40, paddingBottom: insets.bottom + 40 }]} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+          <View style={s.header}>
+            <Text style={s.headerTitle}>My Crafts</Text>
+            <TouchableOpacity style={s.addBtn} onPress={openAdd}>
+              <Plus size={20} color="#fff" />
+              <Text style={s.addBtnText}>Add Craft</Text>
             </TouchableOpacity>
           </View>
-        ) : (
-          <FlatList data={crafts} renderItem={renderCraft} keyExtractor={(item) => item._id} scrollEnabled={false} />
-        )}
 
-        {/* Detail Modal */}
-        {showDetail && selectedCraft && (
-          <View style={s.detailOverlay}>
-            <View style={s.detailModal}>
-              <View style={s.detailHeader}>
-                <Text style={s.detailTitle}>{selectedCraft.name}</Text>
-                <TouchableOpacity onPress={() => { setShowDetail(false); setSelectedCraft(null); }}>
-                  <X size={24} color="#9CA3AF" />
-                </TouchableOpacity>
-              </View>
-              <ScrollView style={s.detailBody}>
-                <View style={s.detailImageRow}>
-                  {selectedCraft.images && selectedCraft.images.length > 0 ? (
-                    <FlatList
-                      horizontal
-                      pagingEnabled
-                      showsHorizontalScrollIndicator={false}
-                      data={selectedCraft.images}
-                      keyExtractor={(uri, idx) => idx.toString()}
-                      renderItem={({ item }) => (
-                        <Image source={{ uri: item }} style={s.detailFullImage} />
-                      )}
-                    />
-                  ) : (
-                    <Image source={{ uri: 'https://via.placeholder.com/400x300' }} style={s.detailFullImage} />
-                  )}
+          {crafts.length === 0 ? (
+            <View style={s.emptyCard}>
+              <Text style={s.emptyText}>No crafts listed yet</Text>
+              <Text style={s.emptySub}>Start showcasing your traditional crafts</Text>
+              <TouchableOpacity style={s.emptyBtn} onPress={openAdd}>
+                <Text style={s.emptyBtnText}>Add Your First Craft</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <FlatList data={crafts} renderItem={renderCraft} keyExtractor={(item) => item._id} scrollEnabled={false} />
+          )}
+
+          {/* Detail Modal */}
+          {showDetail && selectedCraft && (
+            <View style={s.detailOverlay}>
+              <View style={s.detailModal}>
+                <View style={s.detailHeader}>
+                  <Text style={s.detailTitle}>{selectedCraft.name}</Text>
+                  <TouchableOpacity onPress={() => { setShowDetail(false); setSelectedCraft(null); }}>
+                    <X size={24} color="#9CA3AF" />
+                  </TouchableOpacity>
                 </View>
-                <View style={s.detailSection}>
-                  <Text style={s.detailSectionTitle}>Basic Info</Text>
-                  <View style={s.detailRow}>
-                    <Text style={s.detailLabel}>Category</Text>
-                    <Text style={s.detailValue}>{selectedCraft.category}</Text>
+                <ScrollView style={s.detailBody}>
+                  <View style={s.detailImageRow}>
+                    {selectedCraft.images && selectedCraft.images.length > 0 ? (
+                      <FlatList
+                        horizontal
+                        pagingEnabled
+                        showsHorizontalScrollIndicator={false}
+                        data={selectedCraft.images}
+                        keyExtractor={(uri, idx) => idx.toString()}
+                        renderItem={({ item }) => (
+                          <Image source={{ uri: item }} style={s.detailFullImage} />
+                        )}
+                      />
+                    ) : (
+                      <Image source={{ uri: 'https://via.placeholder.com/400x300' }} style={s.detailFullImage} />
+                    )}
                   </View>
-                  <View style={s.detailRow}>
-                    <Text style={s.detailLabel}>Price</Text>
-                    <Text style={[s.detailValue, s.detailPrice]}>LKR {selectedCraft.price?.toLocaleString()}</Text>
+                  <View style={s.detailSection}>
+                    <Text style={s.detailSectionTitle}>Basic Info</Text>
+                    <View style={s.detailRow}>
+                      <Text style={s.detailLabel}>Category</Text>
+                      <Text style={s.detailValue}>{selectedCraft.category}</Text>
+                    </View>
+                    <View style={s.detailRow}>
+                      <Text style={s.detailLabel}>Price</Text>
+                      <Text style={[s.detailValue, s.detailPrice]}>LKR {selectedCraft.price?.toLocaleString()}</Text>
+                    </View>
+                    <View style={s.detailRow}>
+                      <Text style={s.detailLabel}>Stock</Text>
+                      <Text style={s.detailValue}>{selectedCraft.stock} available</Text>
+                    </View>
+                    <View style={s.detailRow}>
+                      <Text style={s.detailLabel}>Status</Text>
+                      <View style={[s.statusBadge, selectedCraft.isAvailable === false ? s.statusUnavailable : s.statusAvailable]}>
+                        <Text style={selectedCraft.isAvailable === false ? s.statusUnavailableText : s.statusAvailableText}>
+                          {selectedCraft.isAvailable === false ? 'Out of Stock' : 'Available'}
+                        </Text>
+                      </View>
+                    </View>
                   </View>
-                  <View style={s.detailRow}>
-                    <Text style={s.detailLabel}>Stock</Text>
-                    <Text style={s.detailValue}>{selectedCraft.stock} available</Text>
-                  </View>
-                  <View style={s.detailRow}>
-                    <Text style={s.detailLabel}>Status</Text>
-                    <View style={[s.statusBadge, selectedCraft.isAvailable === false ? s.statusUnavailable : s.statusAvailable]}>
-                      <Text style={selectedCraft.isAvailable === false ? s.statusUnavailableText : s.statusAvailableText}>
-                        {selectedCraft.isAvailable === false ? 'Out of Stock' : 'Available'}
+
+                  {selectedCraft.description && (
+                    <View style={s.detailSection}>
+                      <Text style={s.detailSectionTitle}>Description</Text>
+                      <Text style={s.detailDesc}>{selectedCraft.description}</Text>
+                    </View>
+                  )}
+
+                  {selectedCraft.dimensions && (selectedCraft.dimensions.height || selectedCraft.dimensions.width || selectedCraft.dimensions.depth) && (
+                    <View style={s.detailSection}>
+                      <Text style={s.detailSectionTitle}>Dimensions</Text>
+                      <Text style={s.detailValue}>
+                        {selectedCraft.dimensions.height || ''}{selectedCraft.dimensions.height && selectedCraft.dimensions.width ? '×' : ''} {selectedCraft.dimensions.width || ''}{selectedCraft.dimensions.depth ? `× ${selectedCraft.dimensions.depth} ${selectedCraft.dimensions.unit || 'cm'}` : ''}
                       </Text>
                     </View>
-                  </View>
+                  )}
+
+                  {selectedCraft.weight && (selectedCraft.weight.value || selectedCraft.weight.unit) && (
+                    <View style={s.detailSection}>
+                      <Text style={s.detailSectionTitle}>Weight</Text>
+                      <Text style={s.detailValue}>{selectedCraft.weight.value} {selectedCraft.weight.unit}</Text>
+                    </View>
+                  )}
+
+                  {selectedCraft.materials && selectedCraft.materials.length > 0 && (
+                    <View style={s.detailSection}>
+                      <Text style={s.detailSectionTitle}>Materials</Text>
+                      <View style={s.detailChipContainer}>
+                        {selectedCraft.materials.map((m: string, idx: number) => (
+                          <View key={idx} style={s.detailChip}>
+                            <Text style={s.detailChipText}>{m}</Text>
+                          </View>
+                        ))}
+                      </View>
+                    </View>
+                  )}
+
+                  {selectedCraft.tags && selectedCraft.tags.length > 0 && (
+                    <View style={s.detailSection}>
+                      <Text style={s.detailSectionTitle}>Tags</Text>
+                      <View style={s.detailChipContainer}>
+                        {selectedCraft.tags.map((t: string, idx: number) => (
+                          <View key={idx} style={[s.detailChip, s.detailTagChip]}>
+                            <Text style={s.detailChipText}>{t}</Text>
+                          </View>
+                        ))}
+                      </View>
+                    </View>
+                  )}
+                </ScrollView>
+                <View style={s.detailFooter}>
+                  <TouchableOpacity style={[s.modalCancelBtn, { flex: 1 }]} onPress={() => { setShowDetail(false); setSelectedCraft(null); }}>
+                    <Text style={s.modalCancelText}>Close</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[s.modalSaveBtn, { flex: 1, backgroundColor: '#F59E0B' }]} onPress={() => { setShowDetail(false); openEdit(selectedCraft); }}>
+                    <Text style={s.modalSaveText}>Edit</Text>
+                  </TouchableOpacity>
                 </View>
-
-                {selectedCraft.description && (
-                  <View style={s.detailSection}>
-                    <Text style={s.detailSectionTitle}>Description</Text>
-                    <Text style={s.detailDesc}>{selectedCraft.description}</Text>
-                  </View>
-                )}
-
-                {selectedCraft.dimensions && (selectedCraft.dimensions.height || selectedCraft.dimensions.width || selectedCraft.dimensions.depth) && (
-                  <View style={s.detailSection}>
-                    <Text style={s.detailSectionTitle}>Dimensions</Text>
-                    <Text style={s.detailValue}>
-                      {selectedCraft.dimensions.height || ''}{selectedCraft.dimensions.height && selectedCraft.dimensions.width ? '×' : ''} {selectedCraft.dimensions.width || ''}{selectedCraft.dimensions.depth ? `× ${selectedCraft.dimensions.depth} ${selectedCraft.dimensions.unit || 'cm'}` : ''}
-                    </Text>
-                  </View>
-                )}
-
-                {selectedCraft.weight && (selectedCraft.weight.value || selectedCraft.weight.unit) && (
-                  <View style={s.detailSection}>
-                    <Text style={s.detailSectionTitle}>Weight</Text>
-                    <Text style={s.detailValue}>{selectedCraft.weight.value} {selectedCraft.weight.unit}</Text>
-                  </View>
-                )}
-
-                {selectedCraft.materials && selectedCraft.materials.length > 0 && (
-                  <View style={s.detailSection}>
-                    <Text style={s.detailSectionTitle}>Materials</Text>
-                    <View style={s.detailChipContainer}>
-                      {selectedCraft.materials.map((m: string, idx: number) => (
-                        <View key={idx} style={s.detailChip}>
-                          <Text style={s.detailChipText}>{m}</Text>
-                        </View>
-                      ))}
-                    </View>
-                  </View>
-                )}
-
-                {selectedCraft.tags && selectedCraft.tags.length > 0 && (
-                  <View style={s.detailSection}>
-                    <Text style={s.detailSectionTitle}>Tags</Text>
-                    <View style={s.detailChipContainer}>
-                      {selectedCraft.tags.map((t: string, idx: number) => (
-                        <View key={idx} style={[s.detailChip, s.detailTagChip]}>
-                          <Text style={s.detailChipText}>{t}</Text>
-                        </View>
-                      ))}
-                    </View>
-                  </View>
-                )}
-              </ScrollView>
-              <View style={s.detailFooter}>
-                <TouchableOpacity style={[s.modalCancelBtn, { flex: 1 }]} onPress={() => { setShowDetail(false); setSelectedCraft(null); }}>
-                  <Text style={s.modalCancelText}>Close</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[s.modalSaveBtn, { flex: 1, backgroundColor: '#F59E0B' }]} onPress={() => { setShowDetail(false); openEdit(selectedCraft); }}>
-                  <Text style={s.modalSaveText}>Edit</Text>
-                </TouchableOpacity>
               </View>
             </View>
-          </View>
-        )}
+          )}
 
-        {/* Add/Edit Modal */}
-        {showModal && (
-          <View style={s.fullModalOverlay}>
-            <View style={s.fullModalCard}>
-              <View style={s.modalHeader}>
-                <Text style={s.modalTitle}>{editingCraft ? 'Edit Craft' : 'Add New Craft'}</Text>
-                <TouchableOpacity onPress={() => { setShowModal(false); resetForm(); }}>
-                  <X size={24} color="#9CA3AF" />
-                </TouchableOpacity>
-              </View>
-              <ScrollView style={s.fullModalBody}>
-                <Text style={s.fieldLabel}>Name *</Text>
-                <TextInput style={s.modalInput} value={form.name} onChangeText={v => setForm({ ...form, name: v })} />
-                <Text style={s.fieldLabel}>Description</Text>
-                <TextInput style={[s.modalInput, { height: 100 }]} value={form.description} onChangeText={v => setForm({ ...form, description: v })} multiline textAlignVertical="top" />
-                <View style={s.row}>
-                  <View style={{ flex: 1, marginRight: 12 }}>
-                    <Text style={s.fieldLabel}>Price *</Text>
-                    <TextInput style={s.modalInput} value={form.price} onChangeText={v => setForm({ ...form, price: v })} keyboardType="numeric" placeholder="0.00" />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={s.fieldLabel}>Category *</Text>
-                    <TextInput style={s.modalInput} value={form.category} onChangeText={v => setForm({ ...form, category: v })} placeholder="Select category" />
-                  </View>
+          {/* Add/Edit Modal */}
+          {showModal && (
+            <View style={s.fullModalOverlay}>
+              <View style={s.fullModalCard}>
+                <View style={s.modalHeader}>
+                  <Text style={s.modalTitle}>{editingCraft ? 'Edit Craft' : 'Add New Craft'}</Text>
+                  <TouchableOpacity onPress={() => { setShowModal(false); resetForm(); }}>
+                    <X size={24} color="#9CA3AF" />
+                  </TouchableOpacity>
                 </View>
-                <View style={s.fieldRow}>
-                  <Text style={s.fieldLabel}>Dimensions (cm)</Text>
-                </View>
-                <View style={s.row}>
-                  <View style={{ flex: 1, marginRight: 4 }}>
-                    <TextInput style={[s.dimensionInput, { backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#CBD5E1', borderRadius: 12, padding: 14, flex: 1 }]} value={form.dimensions.height} onChangeText={v => setForm({ ...form, dimensions: { ...form.dimensions, height: v } })} placeholder="H" keyboardType="numeric" />
-                  </View>
-                  <View style={{ flex: 1, marginHorizontal: 6 }}>
-                    <TextInput style={[s.dimensionInput, { backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#CBD5E1', borderRadius: 12, padding: 14, flex: 1 }]} value={form.dimensions.width} onChangeText={v => setForm({ ...form, dimensions: { ...form.dimensions, width: v } })} placeholder="W" keyboardType="numeric" />
-                  </View>
-                  <View style={{ flex: 1, marginHorizontal: 6 }}>
-                    <TextInput style={[s.dimensionInput, { backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#CBD5E1', borderRadius: 12, padding: 14, flex: 1 }]} value={form.dimensions.depth} onChangeText={v => setForm({ ...form, dimensions: { ...form.dimensions, depth: v } })} placeholder="D" keyboardType="numeric" />
-                  </View>
-                </View>
-                <View style={s.fieldRow}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
-                    <Text style={s.fieldLabel}>Weight</Text>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 12 }}>
-                      <TextInput style={[s.weightInput, { backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#CBD5E1', borderRadius: 12, padding: 14, width: 100 }]} value={form.weight.value} onChangeText={v => setForm({ ...form, weight: { ...form.weight, value: v } })} placeholder="0.0" keyboardType="numeric" />
-                      <TextInput style={[s.unitInput, { backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#CBD5E1', borderRadius: 12, padding: 14, width: 80, marginLeft: 8 }]} value={form.weight.unit} onChangeText={v => setForm({ ...form, weight: { ...form.weight, unit: v } })} placeholder="kg" />
+                <ScrollView style={s.fullModalBody}>
+                  <Text style={s.fieldLabel}>Name *</Text>
+                  <TextInput style={s.modalInput} value={form.name} onChangeText={v => setForm({ ...form, name: v })} />
+                  <Text style={s.fieldLabel}>Description</Text>
+                  <TextInput style={[s.modalInput, { height: 100 }]} value={form.description} onChangeText={v => setForm({ ...form, description: v })} multiline textAlignVertical="top" />
+                  <View style={s.row}>
+                    <View style={{ flex: 1, marginRight: 12 }}>
+                      <Text style={s.fieldLabel}>Price *</Text>
+                      <TextInput style={s.modalInput} value={form.price} onChangeText={v => setForm({ ...form, price: v })} keyboardType="numeric" placeholder="0.00" />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={s.fieldLabel}>Category *</Text>
+                      <TextInput style={s.modalInput} value={form.category} onChangeText={v => setForm({ ...form, category: v })} placeholder="Select category" />
                     </View>
                   </View>
-                </View>
-                <View style={s.fieldRow}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                    <TextInput style={[s.materialInput, { backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#CBD5E1', borderRadius: 12, padding: 14, flex: 1 }]} value={tempMaterial} onChangeText={setTempMaterial} placeholder="Add material" />
-                    <TouchableOpacity style={s.addChipBtn} onPress={() => { if (tempMaterial.trim()) { setForm({ ...form, materials: [...form.materials, tempMaterial.trim()] }); setTempMaterial(''); } }}>
-                      <Plus size={18} color="#2F5D50" />
-                    </TouchableOpacity>
+                  <View style={s.fieldRow}>
+                    <Text style={s.fieldLabel}>Dimensions (cm)</Text>
                   </View>
-                </View>
-                {form.materials.length > 0 && (
-                  <View style={s.chipContainer}>
-                    {form.materials.map((m, idx) => (
-                      <View key={idx} style={s.chip}>
-                        <Text style={s.chipText}>{m}</Text>
-                        <TouchableOpacity onPress={() => setForm({ ...form, materials: form.materials.filter((_, i) => i !== idx) })}>
-                          <X size={14} color="#9CA3AF" />
-                        </TouchableOpacity>
+                  <View style={s.row}>
+                    <View style={{ flex: 1, marginRight: 4 }}>
+                      <TextInput style={[s.dimensionInput, { backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#CBD5E1', borderRadius: 12, padding: 14, flex: 1 }]} value={form.dimensions.height} onChangeText={v => setForm({ ...form, dimensions: { ...form.dimensions, height: v } })} placeholder="H" keyboardType="numeric" />
+                    </View>
+                    <View style={{ flex: 1, marginHorizontal: 6 }}>
+                      <TextInput style={[s.dimensionInput, { backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#CBD5E1', borderRadius: 12, padding: 14, flex: 1 }]} value={form.dimensions.width} onChangeText={v => setForm({ ...form, dimensions: { ...form.dimensions, width: v } })} placeholder="W" keyboardType="numeric" />
+                    </View>
+                    <View style={{ flex: 1, marginHorizontal: 6 }}>
+                      <TextInput style={[s.dimensionInput, { backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#CBD5E1', borderRadius: 12, padding: 14, flex: 1 }]} value={form.dimensions.depth} onChangeText={v => setForm({ ...form, dimensions: { ...form.dimensions, depth: v } })} placeholder="D" keyboardType="numeric" />
+                    </View>
+                  </View>
+                  <View style={s.fieldRow}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+                      <Text style={s.fieldLabel}>Weight</Text>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 12 }}>
+                        <TextInput style={[s.weightInput, { backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#CBD5E1', borderRadius: 12, padding: 14, width: 100 }]} value={form.weight.value} onChangeText={v => setForm({ ...form, weight: { ...form.weight, value: v } })} placeholder="0.0" keyboardType="numeric" />
+                        <TextInput style={[s.unitInput, { backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#CBD5E1', borderRadius: 12, padding: 14, width: 80, marginLeft: 8 }]} value={form.weight.unit} onChangeText={v => setForm({ ...form, weight: { ...form.weight, unit: v } })} placeholder="kg" />
                       </View>
-                    ))}
+                    </View>
                   </View>
-                )}
-                <View style={s.fieldRow}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-                    <TextInput style={[s.tagInput, { backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#CBD5E1', borderRadius: 12, padding: 14, flex: 1 }]} value={tempTag} onChangeText={setTempTag} placeholder="Add tag" />
-                    <TouchableOpacity style={s.addChipBtn} onPress={() => { if (tempTag.trim()) { setForm({ ...form, tags: [...form.tags, tempTag.trim()] }); setTempTag(''); } }}>
-                      <Plus size={18} color="#2F5D50" />
-                    </TouchableOpacity>
-                  </View>
-                </View>
-                {form.tags.length > 0 && (
-                  <View style={s.chipContainer}>
-                    {form.tags.map((t, idx) => (
-                      <View key={idx} style={[s.chip, s.tagChip]}>
-                        <Text style={s.chipText}>{t}</Text>
-                        <TouchableOpacity onPress={() => setForm({ ...form, tags: form.tags.filter((_, i) => i !== idx) })}>
-                          <X size={14} color="#9CA3AF" />
-                        </TouchableOpacity>
-                      </View>
-                    ))}
-                  </View>
-                )}
-                <View style={s.row}>
-                  <View style={{ flex: 1, marginRight: 12 }}>
-                    <Text style={s.fieldLabel}>Stock</Text>
-                    <TextInput style={s.modalInput} value={form.stock.toString()} onChangeText={v => setForm({ ...form, stock: parseInt(v) || 1 })} keyboardType="number-pad" />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={s.fieldLabel}>Currency</Text>
-                    <TextInput style={s.modalInput} value={form.currency} editable={false} />
-                  </View>
-                </View>
-                <Text style={s.fieldLabel}>Images</Text>
-                <View style={s.imgPreviewRow}>
-                  {form.images.map((uri, idx) => (
-                    <View key={idx} style={s.imgPreviewWrap}>
-                      <Image source={{ uri }} style={s.imgPreview} />
-                      <TouchableOpacity style={s.imgRemoveBtn} onPress={() => removeImage(idx)}>
-                        <X size={16} color="#fff" />
+                  <View style={s.fieldRow}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                      <TextInput style={[s.materialInput, { backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#CBD5E1', borderRadius: 12, padding: 14, flex: 1 }]} value={tempMaterial} onChangeText={setTempMaterial} placeholder="Add material" />
+                      <TouchableOpacity style={s.addChipBtn} onPress={() => { if (tempMaterial.trim()) { setForm({ ...form, materials: [...form.materials, tempMaterial.trim()] }); setTempMaterial(''); } }}>
+                        <Plus size={18} color="#2F5D50" />
                       </TouchableOpacity>
                     </View>
-                  ))}
-                  <TouchableOpacity style={s.imgAddBtn} onPress={handlePickImage}>
-                    {uploading ? <ActivityIndicator size="small" color="#2F5D50" /> : <Plus size={24} color="#2F5D50" />}
+                  </View>
+                  {form.materials.length > 0 && (
+                    <View style={s.chipContainer}>
+                      {form.materials.map((m, idx) => (
+                        <View key={idx} style={s.chip}>
+                          <Text style={s.chipText}>{m}</Text>
+                          <TouchableOpacity onPress={() => setForm({ ...form, materials: form.materials.filter((_, i) => i !== idx) })}>
+                            <X size={14} color="#9CA3AF" />
+                          </TouchableOpacity>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+                  <View style={s.fieldRow}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                      <TextInput style={[s.tagInput, { backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#CBD5E1', borderRadius: 12, padding: 14, flex: 1 }]} value={tempTag} onChangeText={setTempTag} placeholder="Add tag" />
+                      <TouchableOpacity style={s.addChipBtn} onPress={() => { if (tempTag.trim()) { setForm({ ...form, tags: [...form.tags, tempTag.trim()] }); setTempTag(''); } }}>
+                        <Plus size={18} color="#2F5D50" />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  {form.tags.length > 0 && (
+                    <View style={s.chipContainer}>
+                      {form.tags.map((t, idx) => (
+                        <View key={idx} style={[s.chip, s.tagChip]}>
+                          <Text style={s.chipText}>{t}</Text>
+                          <TouchableOpacity onPress={() => setForm({ ...form, tags: form.tags.filter((_, i) => i !== idx) })}>
+                            <X size={14} color="#9CA3AF" />
+                          </TouchableOpacity>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+                  <View style={s.row}>
+                    <View style={{ flex: 1, marginRight: 12 }}>
+                      <Text style={s.fieldLabel}>Stock</Text>
+                      <TextInput style={s.modalInput} value={form.stock.toString()} onChangeText={v => setForm({ ...form, stock: parseInt(v) || 1 })} keyboardType="number-pad" />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={s.fieldLabel}>Currency</Text>
+                      <TextInput style={s.modalInput} value={form.currency} editable={false} />
+                    </View>
+                  </View>
+                  <Text style={s.fieldLabel}>Images</Text>
+                  <View style={s.imgPreviewRow}>
+                    {form.images.map((uri, idx) => (
+                      <View key={idx} style={s.imgPreviewWrap}>
+                        <Image source={{ uri }} style={s.imgPreview} />
+                        <TouchableOpacity style={s.imgRemoveBtn} onPress={() => removeImage(idx)}>
+                          <X size={16} color="#fff" />
+                        </TouchableOpacity>
+                      </View>
+                    ))}
+                    <TouchableOpacity style={s.imgAddBtn} onPress={handlePickImage}>
+                      {uploading ? <ActivityIndicator size="small" color="#2F5D50" /> : <Plus size={24} color="#2F5D50" />}
+                    </TouchableOpacity>
+                  </View>
+                  <View style={s.switchRow}>
+                    <Text style={s.fieldLabel}>Available</Text>
+                    <TouchableOpacity
+                      style={[s.switchBtn, form.isAvailable && s.switchBtnActive]}
+                      onPress={() => setForm({ ...form, isAvailable: !form.isAvailable })}
+                    >
+                      <View style={[s.switchThumb, form.isAvailable && s.switchThumbActive]} />
+                    </TouchableOpacity>
+                  </View>
+                </ScrollView>
+                <View style={s.modalFooter}>
+                  <TouchableOpacity style={s.modalCancelBtn} onPress={() => { setShowModal(false); resetForm(); }}>
+                    <Text style={s.modalCancelText}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[s.modalSaveBtn, saving && { opacity: 0.7 }]} onPress={handleSubmit} disabled={saving}>
+                    {saving ? <ActivityIndicator color="#fff" /> : <Text style={s.modalSaveText}>{editingCraft ? 'Update' : 'Save'}</Text>}
                   </TouchableOpacity>
                 </View>
-                <View style={s.switchRow}>
-                  <Text style={s.fieldLabel}>Available</Text>
-                  <TouchableOpacity
-                    style={[s.switchBtn, form.isAvailable && s.switchBtnActive]}
-                    onPress={() => setForm({ ...form, isAvailable: !form.isAvailable })}
-                  >
-                    <View style={[s.switchThumb, form.isAvailable && s.switchThumbActive]} />
-                  </TouchableOpacity>
-                </View>
-              </ScrollView>
-              <View style={s.modalFooter}>
-                <TouchableOpacity style={s.modalCancelBtn} onPress={() => { setShowModal(false); resetForm(); }}>
-                  <Text style={s.modalCancelText}>Cancel</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[s.modalSaveBtn, saving && { opacity: 0.7 }]} onPress={handleSubmit} disabled={saving}>
-                  {saving ? <ActivityIndicator color="#fff" /> : <Text style={s.modalSaveText}>{editingCraft ? 'Update' : 'Save'}</Text>}
-                </TouchableOpacity>
               </View>
             </View>
-          </View>
-        )}
-      </ScrollView>
+          )}
+        </ScrollView>
+      </BatikBackground>
     </View>
   );
 }
@@ -565,16 +567,16 @@ const s = StyleSheet.create({
   emptyBtnText: { color: '#fff', fontWeight: '700', fontSize: 15 },
   modalOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 16 },
   fullModalOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', padding: 0 },
-   fullModalCard: { backgroundColor: '#fff', borderRadius: 0, width: '100%', height: '100%', flex: 1 },
+  fullModalCard: { backgroundColor: '#fff', borderRadius: 0, width: '100%', height: '100%', flex: 1 },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 24 },
   modalTitle: { fontSize: 20, fontWeight: '800', color: '#1E1E1E' },
   fullModalBody: { paddingHorizontal: 24, paddingBottom: 24, flex: 1 },
   modalBody: { paddingHorizontal: 24, flex: 1, paddingBottom: 24 },
-   fieldLabel: { fontSize: 16, fontWeight: '700', color: '#1E1E1E', marginBottom: 10, marginTop: 16 },
+  fieldLabel: { fontSize: 16, fontWeight: '700', color: '#1E1E1E', marginBottom: 10, marginTop: 16 },
   modalInput: { borderWidth: 1.5, borderColor: '#CBD5E1', borderRadius: 12, padding: 18, fontSize: 16, color: '#1E1E1E', minHeight: 56, backgroundColor: '#fff' },
   row: { flexDirection: 'row' },
   fieldRow: { marginTop: 12 },
-   dimensionInput: { fontSize: 16, color: '#1E1E1E', minHeight: 48 },
+  dimensionInput: { fontSize: 16, color: '#1E1E1E', minHeight: 48 },
   weightInput: { fontSize: 16, color: '#1E1E1E', minHeight: 48 },
   unitInput: { fontSize: 16, color: '#1E1E1E', minHeight: 48 },
   materialInput: { fontSize: 16, color: '#1E1E1E', minHeight: 48 },

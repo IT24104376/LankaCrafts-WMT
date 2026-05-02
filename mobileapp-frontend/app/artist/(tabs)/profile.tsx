@@ -143,161 +143,163 @@ export default function ArtistProfileScreen() {
   if (loading) {
     return (
       <View style={s.safe}>
-        <BatikBackground />
-        <View style={s.loading}>
-          <ActivityIndicator size="large" color="#2F5D50" />
-        </View>
+        <BatikBackground>
+          <View style={s.loading}>
+            <ActivityIndicator size="large" color="#2F5D50" />
+          </View>
+        </BatikBackground>
       </View>
     );
   }
 
   return (
     <View style={s.safe}>
-      <BatikBackground />
-      {/* Header with Logout */}
-      <View style={s.header}>
-        <Text style={s.headerTitle}>My Profile</Text>
-        <TouchableOpacity style={s.logoutBtn} onPress={handleLogout}>
-          <LogOut size={20} color="#DC2626" />
-          <Text style={s.logoutText}>Logout</Text>
-        </TouchableOpacity>
-      </View>
+      <BatikBackground>
+        {/* Header with Logout */}
+        <View style={s.header}>
+          <Text style={s.headerTitle}>My Profile</Text>
+          <TouchableOpacity style={s.logoutBtn} onPress={handleLogout}>
+            <LogOut size={20} color="#DC2626" />
+            <Text style={s.logoutText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
 
-      <ScrollView contentContainerStyle={s.content}>
-        {/* Cover & Avatar */}
-        <View style={s.coverSection}>
-          <View style={s.cover} />
-          <View style={s.avatarWrapper}>
-            {form.profilePicUrl ? (
-              <Image source={{ uri: form.profilePicUrl }} style={s.avatar} />
+        <ScrollView contentContainerStyle={s.content}>
+          {/* Cover & Avatar */}
+          <View style={s.coverSection}>
+            <View style={s.cover} />
+            <View style={s.avatarWrapper}>
+              {form.profilePicUrl ? (
+                <Image source={{ uri: form.profilePicUrl }} style={s.avatar} />
+              ) : (
+                <View style={s.avatarPlaceholder}>
+                  <Text style={s.avatarText}>{form.fullName?.[0] || 'A'}</Text>
+                </View>
+              )}
+              {editing && (
+                <TouchableOpacity style={s.editAvatarBtn} onPress={handleImagePick}>
+                  {uploading ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                  ) : (
+                    <Camera size={18} color="#fff" />
+                  )}
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+
+          {/* Info Card */}
+          <View style={s.card}>
+            {!editing ? (
+              <>
+                <View style={s.headerRow}>
+                  <View style={{ flex: 1 }}>
+                    <Text style={s.name}>{form.fullName || 'Unknown'}</Text>
+                    <Text style={s.handle}>@{form.callingName || form.fullName?.toLowerCase().replace(/\s+/g, '') || 'unknown'}</Text>
+                  </View>
+                  <TouchableOpacity style={s.editBtn} onPress={() => setEditing(true)}>
+                    <Text style={s.editBtnText}>Edit</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <View style={s.row}>
+                  <View style={s.badge}>
+                    <Text style={s.badgeText}>{form.craftType || 'N/A'}</Text>
+                  </View>
+                </View>
+
+                {form.bio ? <Text style={s.bio}>{form.bio}</Text> : null}
+
+                <View style={s.divider} />
+
+                <View style={s.detailRow}>
+                  <Text style={s.detailLabel}>Email</Text>
+                  <Text style={s.detailValue}>{form.email || 'N/A'}</Text>
+                </View>
+                <View style={s.detailRow}>
+                  <Text style={s.detailLabel}>Phone</Text>
+                  <Text style={s.detailValue}>{form.phone || 'Not provided'}</Text>
+                </View>
+                <View style={s.detailRow}>
+                  <Text style={s.detailLabel}>Location</Text>
+                  <Text style={s.detailValue}>
+                    {[form.address.city, form.address.district, form.address.province].filter(Boolean).join(', ') || 'Not provided'}
+                  </Text>
+                </View>
+                <View style={s.detailRow}>
+                  <Text style={s.detailLabel}>Rating</Text>
+                  <Text style={s.detailValue}>★ {profile?.rating || '0'} ({profile?.reviewCount || 0} reviews)</Text>
+                </View>
+              </>
             ) : (
-              <View style={s.avatarPlaceholder}>
-                <Text style={s.avatarText}>{form.fullName?.[0] || 'A'}</Text>
-              </View>
-            )}
-            {editing && (
-              <TouchableOpacity style={s.editAvatarBtn} onPress={handleImagePick}>
-                {uploading ? (
-                  <ActivityIndicator size="small" color="#fff" />
-                ) : (
-                  <Camera size={18} color="#fff" />
-                )}
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-
-        {/* Info Card */}
-        <View style={s.card}>
-          {!editing ? (
-            <>
-              <View style={s.headerRow}>
-                <View style={{ flex: 1 }}>
-                  <Text style={s.name}>{form.fullName || 'Unknown'}</Text>
-                  <Text style={s.handle}>@{form.callingName || form.fullName?.toLowerCase().replace(/\s+/g, '') || 'unknown'}</Text>
+              <>
+                <Text style={s.sectionTitle}>Edit Profile</Text>
+                <View style={s.field}>
+                  <Text style={s.fieldLabel}>Full Name *</Text>
+                  <TextInput style={s.editInput} value={form.fullName} onChangeText={v => setForm({ ...form, fullName: v })} />
                 </View>
-                <TouchableOpacity style={s.editBtn} onPress={() => setEditing(true)}>
-                  <Text style={s.editBtnText}>Edit</Text>
-                </TouchableOpacity>
-              </View>
-
-              <View style={s.row}>
-                <View style={s.badge}>
-                  <Text style={s.badgeText}>{form.craftType || 'N/A'}</Text>
+                <View style={s.field}>
+                  <Text style={s.fieldLabel}>Calling Name</Text>
+                  <TextInput style={s.editInput} value={form.callingName} onChangeText={v => setForm({ ...form, callingName: v })} />
                 </View>
-              </View>
-
-              {form.bio ? <Text style={s.bio}>{form.bio}</Text> : null}
-
-              <View style={s.divider} />
-
-              <View style={s.detailRow}>
-                <Text style={s.detailLabel}>Email</Text>
-                <Text style={s.detailValue}>{form.email || 'N/A'}</Text>
-              </View>
-              <View style={s.detailRow}>
-                <Text style={s.detailLabel}>Phone</Text>
-                <Text style={s.detailValue}>{form.phone || 'Not provided'}</Text>
-              </View>
-              <View style={s.detailRow}>
-                <Text style={s.detailLabel}>Location</Text>
-                <Text style={s.detailValue}>
-                  {[form.address.city, form.address.district, form.address.province].filter(Boolean).join(', ') || 'Not provided'}
-                </Text>
-              </View>
-              <View style={s.detailRow}>
-                <Text style={s.detailLabel}>Rating</Text>
-                <Text style={s.detailValue}>★ {profile?.rating || '0'} ({profile?.reviewCount || 0} reviews)</Text>
-              </View>
-            </>
-          ) : (
-            <>
-              <Text style={s.sectionTitle}>Edit Profile</Text>
-              <View style={s.field}>
-                <Text style={s.fieldLabel}>Full Name *</Text>
-                <TextInput style={s.editInput} value={form.fullName} onChangeText={v => setForm({ ...form, fullName: v })} />
-              </View>
-              <View style={s.field}>
-                <Text style={s.fieldLabel}>Calling Name</Text>
-                <TextInput style={s.editInput} value={form.callingName} onChangeText={v => setForm({ ...form, callingName: v })} />
-              </View>
-              <View style={s.field}>
-                <Text style={s.fieldLabel}>Email</Text>
-                <TextInput style={s.editInput} value={form.email} keyboardType="email-address" editable={false} />
-              </View>
-              <View style={s.field}>
-                <Text style={s.fieldLabel}>Phone</Text>
-                <TextInput style={s.editInput} value={form.phone} onChangeText={v => setForm({ ...form, phone: v })} placeholder="+94 xxx xxxxxx" />
-              </View>
-              <View style={s.field}>
-                <Text style={s.fieldLabel}>Craft Type</Text>
-                <TextInput style={s.editInput} value={form.craftType} editable={false} />
-              </View>
-              <View style={s.field}>
-                <Text style={s.fieldLabel}>Bio</Text>
-                <TextInput style={[s.editInput, { height: 80, textAlignVertical: 'top' }]} value={form.bio} onChangeText={v => setForm({ ...form, bio: v })} multiline />
-              </View>
-              <Text style={s.sectionTitle}>Address</Text>
-              <View style={s.field}>
-                <Text style={s.fieldLabel}>City</Text>
-                <TextInput style={s.editInput} value={form.address.city} onChangeText={v => setForm({ ...form, address: { ...form.address, city: v } })} />
-              </View>
-              <View style={s.field}>
-                <Text style={s.fieldLabel}>District</Text>
-                <TextInput style={s.editInput} value={form.address.district} onChangeText={v => setForm({ ...form, address: { ...form.address, district: v } })} />
-              </View>
-              <View style={s.field}>
-                <Text style={s.fieldLabel}>Province</Text>
-                <TextInput style={s.editInput} value={form.address.province} onChangeText={v => setForm({ ...form, address: { ...form.address, province: v } })} />
-              </View>
-              <View style={s.btnGroup}>
-                <TouchableOpacity style={s.cancelBtn} onPress={() => setEditing(false)}>
-                  <Text style={s.cancelBtnText}>Cancel</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[s.saveBtn, saving && { opacity: 0.7 }]} onPress={handleSave} disabled={saving}>
-                  {saving ? <ActivityIndicator color="#fff" /> : <Text style={s.saveBtnText}>Save</Text>}
-                </TouchableOpacity>
-              </View>
-            </>
-          )}
-        </View>
-
-        {/* Stats */}
-        <View style={s.statsRow}>
-          <View style={s.statCard}>
-            <Text style={s.statNum}>{profile?.workshopsConducted || 0}</Text>
-            <Text style={s.statLabel}>Workshops</Text>
+                <View style={s.field}>
+                  <Text style={s.fieldLabel}>Email</Text>
+                  <TextInput style={s.editInput} value={form.email} keyboardType="email-address" editable={false} />
+                </View>
+                <View style={s.field}>
+                  <Text style={s.fieldLabel}>Phone</Text>
+                  <TextInput style={s.editInput} value={form.phone} onChangeText={v => setForm({ ...form, phone: v })} placeholder="+94 xxx xxxxxx" />
+                </View>
+                <View style={s.field}>
+                  <Text style={s.fieldLabel}>Craft Type</Text>
+                  <TextInput style={s.editInput} value={form.craftType} editable={false} />
+                </View>
+                <View style={s.field}>
+                  <Text style={s.fieldLabel}>Bio</Text>
+                  <TextInput style={[s.editInput, { height: 80, textAlignVertical: 'top' }]} value={form.bio} onChangeText={v => setForm({ ...form, bio: v })} multiline />
+                </View>
+                <Text style={s.sectionTitle}>Address</Text>
+                <View style={s.field}>
+                  <Text style={s.fieldLabel}>City</Text>
+                  <TextInput style={s.editInput} value={form.address.city} onChangeText={v => setForm({ ...form, address: { ...form.address, city: v } })} />
+                </View>
+                <View style={s.field}>
+                  <Text style={s.fieldLabel}>District</Text>
+                  <TextInput style={s.editInput} value={form.address.district} onChangeText={v => setForm({ ...form, address: { ...form.address, district: v } })} />
+                </View>
+                <View style={s.field}>
+                  <Text style={s.fieldLabel}>Province</Text>
+                  <TextInput style={s.editInput} value={form.address.province} onChangeText={v => setForm({ ...form, address: { ...form.address, province: v } })} />
+                </View>
+                <View style={s.btnGroup}>
+                  <TouchableOpacity style={s.cancelBtn} onPress={() => setEditing(false)}>
+                    <Text style={s.cancelBtnText}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[s.saveBtn, saving && { opacity: 0.7 }]} onPress={handleSave} disabled={saving}>
+                    {saving ? <ActivityIndicator color="#fff" /> : <Text style={s.saveBtnText}>Save</Text>}
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
           </View>
-          <View style={s.statCard}>
-            <Text style={s.statNum}>{profile?.rating || 0}</Text>
-            <Text style={s.statLabel}>Avg Rating</Text>
+
+          {/* Stats */}
+          <View style={s.statsRow}>
+            <View style={s.statCard}>
+              <Text style={s.statNum}>{profile?.workshopsConducted || 0}</Text>
+              <Text style={s.statLabel}>Workshops</Text>
+            </View>
+            <View style={s.statCard}>
+              <Text style={s.statNum}>{profile?.rating || 0}</Text>
+              <Text style={s.statLabel}>Avg Rating</Text>
+            </View>
+            <View style={s.statCard}>
+              <Text style={s.statNum}>{profile?.reviewCount || 0}</Text>
+              <Text style={s.statLabel}>Reviews</Text>
+            </View>
           </View>
-          <View style={s.statCard}>
-            <Text style={s.statNum}>{profile?.reviewCount || 0}</Text>
-            <Text style={s.statLabel}>Reviews</Text>
-          </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </BatikBackground>
     </View>
   );
 }

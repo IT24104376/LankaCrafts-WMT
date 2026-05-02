@@ -388,112 +388,113 @@ export default function ArtistReviewsScreen() {
 
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
-      <BatikBackground />
+      <BatikBackground>
 
-      {/* Header */}
-      <View style={s.header}>
-        <Text style={s.headerTitle}>My Reviews</Text>
-        <TouchableOpacity
-          style={s.sortBtn}
-          onPress={() => setShowSort(v => !v)}
-          activeOpacity={0.7}
-        >
-          <Text style={s.sortBtnText}>
-            {SORT_OPTIONS.find(o => o.value === sortBy)?.label || 'Sort'}
-          </Text>
-          {showSort ? <ChevronUp size={14} color="#2F5D50" /> : <ChevronDown size={14} color="#2F5D50" />}
-        </TouchableOpacity>
-      </View>
-
-      {/* Sort dropdown */}
-      {showSort && (
-        <View style={s.sortDropdown}>
-          {SORT_OPTIONS.map(opt => (
-            <TouchableOpacity
-              key={opt.value}
-              style={[s.sortOption, sortBy === opt.value && s.sortOptionActive]}
-              onPress={() => { setSortBy(opt.value as any); setShowSort(false); }}
-            >
-              <Text style={[s.sortOptionText, sortBy === opt.value && s.sortOptionTextActive]}>
-                {opt.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
+        {/* Header */}
+        <View style={s.header}>
+          <Text style={s.headerTitle}>My Reviews</Text>
+          <TouchableOpacity
+            style={s.sortBtn}
+            onPress={() => setShowSort(v => !v)}
+            activeOpacity={0.7}
+          >
+            <Text style={s.sortBtnText}>
+              {SORT_OPTIONS.find(o => o.value === sortBy)?.label || 'Sort'}
+            </Text>
+            {showSort ? <ChevronUp size={14} color="#2F5D50" /> : <ChevronDown size={14} color="#2F5D50" />}
+          </TouchableOpacity>
         </View>
-      )}
 
-      {loading ? (
-        <View style={s.center}>
-          <ActivityIndicator size="large" color="#2F5D50" />
-        </View>
-      ) : (
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={s.listContent}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={() => { setRefreshing(true); load(); }}
-              colors={['#2F5D50']}
-            />
-          }
-        >
-          {/* Stats card */}
-          {totalReviews > 0 && (
-            <View style={s.statsCard}>
-              <View style={s.statsLeft}>
-                <Text style={s.bigRating}>{overallRating.toFixed(1)}</Text>
-                <StarRow rating={Math.round(overallRating)} size={16} />
-                <Text style={s.totalReviews}>{totalReviews} {totalReviews === 1 ? 'review' : 'reviews'}</Text>
+        {/* Sort dropdown */}
+        {showSort && (
+          <View style={s.sortDropdown}>
+            {SORT_OPTIONS.map(opt => (
+              <TouchableOpacity
+                key={opt.value}
+                style={[s.sortOption, sortBy === opt.value && s.sortOptionActive]}
+                onPress={() => { setSortBy(opt.value as any); setShowSort(false); }}
+              >
+                <Text style={[s.sortOptionText, sortBy === opt.value && s.sortOptionTextActive]}>
+                  {opt.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
+        {loading ? (
+          <View style={s.center}>
+            <ActivityIndicator size="large" color="#2F5D50" />
+          </View>
+        ) : (
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={s.listContent}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={() => { setRefreshing(true); load(); }}
+                colors={['#2F5D50']}
+              />
+            }
+          >
+            {/* Stats card */}
+            {totalReviews > 0 && (
+              <View style={s.statsCard}>
+                <View style={s.statsLeft}>
+                  <Text style={s.bigRating}>{overallRating.toFixed(1)}</Text>
+                  <StarRow rating={Math.round(overallRating)} size={16} />
+                  <Text style={s.totalReviews}>{totalReviews} {totalReviews === 1 ? 'review' : 'reviews'}</Text>
+                </View>
+                <View style={s.statsRight}>
+                  {[5, 4, 3, 2, 1].map(stars => {
+                    const found = dist.find((d: any) => d.stars === stars);
+                    return (
+                      <RatingBar
+                        key={stars}
+                        stars={stars}
+                        count={found?.count || 0}
+                        total={totalReviews}
+                      />
+                    );
+                  })}
+                </View>
               </View>
-              <View style={s.statsRight}>
-                {[5, 4, 3, 2, 1].map(stars => {
-                  const found = dist.find((d: any) => d.stars === stars);
-                  return (
-                    <RatingBar
-                      key={stars}
-                      stars={stars}
-                      count={found?.count || 0}
-                      total={totalReviews}
-                    />
-                  );
-                })}
+            )}
+
+            {/* AI Summary */}
+            {(totalReviews > 0 || loadingAi) && (
+              <AISummaryCard
+                loading={loadingAi}
+                data={aiSummary}
+                totalReviews={totalReviews}
+              />
+            )}
+
+            {/* Reviews list */}
+            {reviews.length === 0 ? (
+              <View style={s.empty}>
+                <Star size={52} color="#D1D5DB" fill="transparent" />
+                <Text style={s.emptyTitle}>No reviews yet</Text>
+                <Text style={s.emptySub}>
+                  Reviews from tourists will appear here once they visit your workshops.
+                </Text>
               </View>
-            </View>
-          )}
-
-          {/* AI Summary */}
-          {(totalReviews > 0 || loadingAi) && (
-            <AISummaryCard
-              loading={loadingAi}
-              data={aiSummary}
-              totalReviews={totalReviews}
-            />
-          )}
-
-          {/* Reviews list */}
-          {reviews.length === 0 ? (
-            <View style={s.empty}>
-              <Star size={52} color="#D1D5DB" fill="transparent" />
-              <Text style={s.emptyTitle}>No reviews yet</Text>
-              <Text style={s.emptySub}>
-                Reviews from tourists will appear here once they visit your workshops.
-              </Text>
-            </View>
-          ) : (
-            reviews.map(r => {
-              const id = r._id || r.id || '';
-              return (
-                <ReviewCard
-                  key={id}
-                  review={r}
-                  onReply={handleReply}
-                />
-              );
-            })
-          )}
-        </ScrollView>
-      )}
+            ) : (
+              reviews.map(r => {
+                const id = r._id || r.id || '';
+                return (
+                  <ReviewCard
+                    key={id}
+                    review={r}
+                    onReply={handleReply}
+                  />
+                );
+              })
+            )}
+          </ScrollView>
+        )}
+      </BatikBackground>
     </SafeAreaView>
   );
 }

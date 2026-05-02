@@ -47,109 +47,110 @@ export default function TouristLoginScreen() {
 
   return (
     <SafeAreaView style={s.safe}>
-      <BatikBackground />
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-          {/* Back button */}
-          <TouchableOpacity style={s.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
-            <ArrowLeft size={20} color="#C65D3B" />
-            <Text style={s.backText}>Back</Text>
-          </TouchableOpacity>
+      <BatikBackground>
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+          <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+            {/* Back button */}
+            <TouchableOpacity style={s.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
+              <ArrowLeft size={20} color="#C65D3B" />
+              <Text style={s.backText}>Back</Text>
+            </TouchableOpacity>
 
-          {/* Card */}
-          <View style={s.card}>
-            {/* Logo */}
-            <View style={s.logoArea}>
-              <View style={s.logoRow}>
-                <Svg width={32} height={32} viewBox="0 0 32 32" fill="none">
-                  <Ellipse cx="16" cy="8" rx="4" ry="7" fill="#C65D3B" opacity={0.9} />
-                  <Ellipse cx="24" cy="16" rx="7" ry="4" fill="#C65D3B" opacity={0.75} />
-                  <Ellipse cx="16" cy="24" rx="4" ry="7" fill="#C65D3B" opacity={0.6} />
-                  <Ellipse cx="8" cy="16" rx="7" ry="4" fill="#C65D3B" opacity={0.75} />
-                  <SvgCircle cx="16" cy="16" r="3.5" fill="#C65D3B" />
-                </Svg>
-                <Text style={s.logoText}>Lanka Crafts</Text>
+            {/* Card */}
+            <View style={s.card}>
+              {/* Logo */}
+              <View style={s.logoArea}>
+                <View style={s.logoRow}>
+                  <Svg width={32} height={32} viewBox="0 0 32 32" fill="none">
+                    <Ellipse cx="16" cy="8" rx="4" ry="7" fill="#C65D3B" opacity={0.9} />
+                    <Ellipse cx="24" cy="16" rx="7" ry="4" fill="#C65D3B" opacity={0.75} />
+                    <Ellipse cx="16" cy="24" rx="4" ry="7" fill="#C65D3B" opacity={0.6} />
+                    <Ellipse cx="8" cy="16" rx="7" ry="4" fill="#C65D3B" opacity={0.75} />
+                    <SvgCircle cx="16" cy="16" r="3.5" fill="#C65D3B" />
+                  </Svg>
+                  <Text style={s.logoText}>Lanka Crafts</Text>
+                </View>
+                <Text style={s.logoSub}>Discover. Experience. Share Sri Lanka.</Text>
               </View>
-              <Text style={s.logoSub}>Discover. Experience. Share Sri Lanka.</Text>
-            </View>
 
-            <View style={s.divider} />
+              <View style={s.divider} />
 
-            <Text style={s.title}>Welcome Back</Text>
-            <Text style={s.subtitle}>Sign in to continue your cultural journey</Text>
+              <Text style={s.title}>Welcome Back</Text>
+              <Text style={s.subtitle}>Sign in to continue your cultural journey</Text>
 
-            {error ? (
-              <View style={s.errorBox}>
-                <Text style={s.errorText}>{error}</Text>
+              {error ? (
+                <View style={s.errorBox}>
+                  <Text style={s.errorText}>{error}</Text>
+                </View>
+              ) : null}
+
+              {/* Email */}
+              <View style={s.field}>
+                <Text style={s.label}>Email Address</Text>
+                <View style={s.inputWrap}>
+                  <Mail size={18} color="#9CA3AF" style={s.icon} />
+                  <TextInput
+                    style={s.input}
+                    placeholder="you@example.com"
+                    placeholderTextColor="#C0C0C0"
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    value={email}
+                    onChangeText={setEmail}
+                  />
+                </View>
               </View>
-            ) : null}
 
-            {/* Email */}
-            <View style={s.field}>
-              <Text style={s.label}>Email Address</Text>
-              <View style={s.inputWrap}>
-                <Mail size={18} color="#9CA3AF" style={s.icon} />
-                <TextInput
-                  style={s.input}
-                  placeholder="you@example.com"
-                  placeholderTextColor="#C0C0C0"
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  value={email}
-                  onChangeText={setEmail}
-                />
+              {/* Password */}
+              <View style={s.field}>
+                <Text style={s.label}>Password</Text>
+                <View style={s.inputWrap}>
+                  <Lock size={18} color="#9CA3AF" style={s.icon} />
+                  <TextInput
+                    style={[s.input, { paddingRight: 44 }]}
+                    placeholder="••••••••"
+                    placeholderTextColor="#C0C0C0"
+                    secureTextEntry={!showPassword}
+                    value={password}
+                    onChangeText={setPassword}
+                  />
+                  <TouchableOpacity style={s.eyeBtn} onPress={() => setShowPassword(!showPassword)}>
+                    {showPassword ? <EyeOff size={18} color="#9CA3AF" /> : <Eye size={18} color="#9CA3AF" />}
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
 
-            {/* Password */}
-            <View style={s.field}>
-              <Text style={s.label}>Password</Text>
-              <View style={s.inputWrap}>
-                <Lock size={18} color="#9CA3AF" style={s.icon} />
-                <TextInput
-                  style={[s.input, { paddingRight: 44 }]}
-                  placeholder="••••••••"
-                  placeholderTextColor="#C0C0C0"
-                  secureTextEntry={!showPassword}
-                  value={password}
-                  onChangeText={setPassword}
-                />
-                <TouchableOpacity style={s.eyeBtn} onPress={() => setShowPassword(!showPassword)}>
-                  {showPassword ? <EyeOff size={18} color="#9CA3AF" /> : <Eye size={18} color="#9CA3AF" />}
+              {/* Forgot Password */}
+              <View style={s.forgotRow}>
+                <TouchableOpacity onPress={handleForgotPassword} disabled={loading}>
+                  <Text style={s.forgotText}>Forgot Password?</Text>
                 </TouchableOpacity>
               </View>
-            </View>
 
-            {/* Forgot Password */}
-            <View style={s.forgotRow}>
-              <TouchableOpacity onPress={handleForgotPassword} disabled={loading}>
-                <Text style={s.forgotText}>Forgot Password?</Text>
+              {/* Submit */}
+              <TouchableOpacity
+                style={[s.submitBtn, { opacity: loading ? 0.6 : 1 }]}
+                onPress={handleSubmit}
+                disabled={loading}
+                activeOpacity={0.8}
+              >
+                {loading ? <ActivityIndicator color="#fff" size="small" /> : <Text style={s.submitText}>Login</Text>}
+              </TouchableOpacity>
+
+              {/* Links */}
+              <View style={s.linksRow}>
+                <Text style={s.linkGray}>Don't have an account? </Text>
+                <TouchableOpacity onPress={() => router.push('/tourist/register')}>
+                  <Text style={s.linkOrange}>Register here</Text>
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity style={{ marginTop: 8, alignSelf: 'center' }} onPress={() => router.push('/')}>
+                <Text style={s.linkOrange}>Back to Home</Text>
               </TouchableOpacity>
             </View>
-
-            {/* Submit */}
-            <TouchableOpacity
-              style={[s.submitBtn, { opacity: loading ? 0.6 : 1 }]}
-              onPress={handleSubmit}
-              disabled={loading}
-              activeOpacity={0.8}
-            >
-              {loading ? <ActivityIndicator color="#fff" size="small" /> : <Text style={s.submitText}>Login</Text>}
-            </TouchableOpacity>
-
-            {/* Links */}
-            <View style={s.linksRow}>
-              <Text style={s.linkGray}>Don't have an account? </Text>
-              <TouchableOpacity onPress={() => router.push('/tourist/register')}>
-                <Text style={s.linkOrange}>Register here</Text>
-              </TouchableOpacity>
-            </View>
-            <TouchableOpacity style={{ marginTop: 8, alignSelf: 'center' }} onPress={() => router.push('/')}>
-              <Text style={s.linkOrange}>Back to Home</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </BatikBackground>
     </SafeAreaView>
   );
 }

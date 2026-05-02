@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Svg, { Circle, Path } from 'react-native-svg';
+import Logo from '../src/components/Logo';
+import { BatikBackground } from '../src/components/BatikBackground';
 import {
   Home,
   LayoutDashboard,
@@ -27,23 +28,6 @@ import {
 import { useAuth } from '../src/context/AuthContext';
 
 const { width } = Dimensions.get('window');
-
-function LogoIcon({ size = 40 }: { size?: number }) {
-  return (
-    <Svg width={size} height={size} viewBox="0 0 32 32" fill="none">
-      <Circle cx="16" cy="16" r="14" fill="#C9A227" opacity={0.2} />
-      <Path
-        d="M16 4 C10 4 6 10 6 16 C6 22 10 28 16 28 C22 28 26 22 26 16 C26 10 22 4 16 4Z"
-        fill="#C9A227"
-        opacity={0.6}
-      />
-      <Path
-        d="M16 8 L18 14 L24 14 L19 18 L21 24 L16 20 L11 24 L13 18 L8 14 L14 14 Z"
-        fill="#C9A227"
-      />
-    </Svg>
-  );
-}
 
 // ── Hero Section ──
 function HeroSection({ isLoggedIn, userRole }: { isLoggedIn: boolean, userRole?: 'tourist' | 'artist' }) {
@@ -151,7 +135,7 @@ function CTASection({ isLoggedIn, userRole }: { isLoggedIn: boolean; userRole?: 
 
     return (
       <View style={styles.ctaSection}>
-        <LogoIcon size={48} />
+        <Logo size={48} />
         <Text style={styles.ctaTitle}>Welcome Back!</Text>
         <Text style={styles.ctaSubtitle}>
           {userRole === 'artist'
@@ -171,7 +155,7 @@ function CTASection({ isLoggedIn, userRole }: { isLoggedIn: boolean; userRole?: 
 
   return (
     <View style={styles.ctaSection}>
-      <LogoIcon size={48} />
+      <Logo size={48} />
       <Text style={styles.ctaTitle}>Ready to Begin?</Text>
       <Text style={styles.ctaSubtitle}>
         Join thousands of cultural explorers discovering the beauty of Sri Lankan craftsmanship.
@@ -263,8 +247,10 @@ export default function HomeScreen() {
   if (loading) {
     return (
       <SafeAreaView style={[styles.safe, { justifyContent: 'center', alignItems: 'center' }]}>
-        <ActivityIndicator size="large" color="#2F5D50" />
-        <Text style={{ marginTop: 12, color: '#6B7280', fontSize: 14 }}>Loading...</Text>
+        <BatikBackground>
+          <ActivityIndicator size="large" color="#2F5D50" />
+          <Text style={{ marginTop: 12, color: '#6B7280', fontSize: 14 }}>Loading...</Text>
+        </BatikBackground>
       </SafeAreaView>
     );
   }
@@ -274,7 +260,7 @@ export default function HomeScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <LogoIcon size={32} />
+          <Logo size={32} />
           <Text style={styles.headerTitle}>Lanka Crafts</Text>
         </View>
 
@@ -301,10 +287,12 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: isLoggedIn ? 80 : 40 }}
       >
-        <HeroSection isLoggedIn={isLoggedIn} userRole={userRole} />
-        <CraftCategoriesSection />
-        <HowItWorksSection />
-        <CTASection isLoggedIn={isLoggedIn} userRole={userRole} />
+        <BatikBackground>
+          <HeroSection isLoggedIn={isLoggedIn} userRole={userRole} />
+          <CraftCategoriesSection />
+          <HowItWorksSection />
+          <CTASection isLoggedIn={isLoggedIn} userRole={userRole} />
+        </BatikBackground>
       </ScrollView>
 
       {/* Bottom Nav Bar - only when logged in */}
