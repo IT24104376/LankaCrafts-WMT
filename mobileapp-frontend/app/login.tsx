@@ -31,7 +31,7 @@ export default function UnifiedLoginScreen() {
 
           <View style={styles.cardsContainer}>
             {/* Tourist Login */}
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.card}
               activeOpacity={0.8}
               onPress={() => router.push('/tourist/login')}
@@ -46,12 +46,12 @@ export default function UnifiedLoginScreen() {
               <ArrowRight size={20} color="#9CA3AF" />
             </TouchableOpacity>
 
-             {/* Artisan Login */}
-             <TouchableOpacity 
-               style={styles.card}
-               activeOpacity={0.8}
-               onPress={() => router.push('/artist/login')}
-             >
+            {/* Artisan Login */}
+            <TouchableOpacity
+              style={styles.card}
+              activeOpacity={0.8}
+              onPress={() => router.push('/artist/login')}
+            >
               <View style={[styles.iconContainer, { backgroundColor: '#FEF0EB' }]}>
                 <Palette size={32} color="#C65D3B" />
               </View>
@@ -63,10 +63,10 @@ export default function UnifiedLoginScreen() {
             </TouchableOpacity>
 
             {/* Admin Login */}
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.card}
               activeOpacity={0.8}
-              onPress={() => alert('Admin portal coming soon!')}
+              onPress={() => router.push('/admin/login')}
             >
               <View style={[styles.iconContainer, { backgroundColor: '#F3F4F6' }]}>
                 <Shield size={32} color="#4B5563" />

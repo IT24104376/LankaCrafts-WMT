@@ -13,6 +13,7 @@ import {
   Settings, Edit3, MapPin, Globe, Calendar, BookOpen,
   Heart, Star, LogOut, ChevronRight, Mail, CreditCard,
 } from 'lucide-react-native';
+import { BatikBackground } from '../../../src/components/BatikBackground';
 
 const { width } = Dimensions.get('window');
 
@@ -73,8 +74,9 @@ export default function TouristProfileScreen() {
   }
 
   return (
-    <SafeAreaView style={s.safe} edges={['top']}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+    <BatikBackground>
+      <SafeAreaView style={s.safe} edges={['top']}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
         {/* Header bar */}
         <View style={s.headerBar}>
           <Text style={s.headerTitle}>Profile</Text>
@@ -273,12 +275,13 @@ export default function TouristProfileScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </BatikBackground>
   );
 }
 
 const s = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#F6F3EE' },
+  safe: { flex: 1, backgroundColor: 'transparent' },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   headerBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 12 },
   headerTitle: { fontSize: 24, fontWeight: '800', color: '#2F5D50' },

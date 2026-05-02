@@ -20,6 +20,9 @@ import {
   UserCircle,
   MessageSquare,
   Bot,
+  Package,
+  Calendar,
+  Star,
 } from 'lucide-react-native';
 import { useAuth } from '../src/context/AuthContext';
 
@@ -43,38 +46,43 @@ function LogoIcon({ size = 40 }: { size?: number }) {
 }
 
 // ── Hero Section ──
-function HeroSection({ isLoggedIn }: { isLoggedIn: boolean }) {
+function HeroSection({ isLoggedIn, userRole }: { isLoggedIn: boolean, userRole?: 'tourist' | 'artist' }) {
   const router = useRouter();
-  return (
-    <View style={styles.hero}>
-      <View style={styles.heroOverlay}>
-        <Text style={styles.heroTag}>🇱🇰 Discover Sri Lanka</Text>
-        <Text style={styles.heroTitle}>Handcrafted{'\n'}with Heart</Text>
-        <Text style={styles.heroSubtitle}>
-          Explore authentic Sri Lankan crafts, meet master artisans, and book hands-on workshop
-          experiences across the island.
-        </Text>
-        {!isLoggedIn && (
-          <TouchableOpacity
-            style={styles.heroCta}
-            onPress={() => router.push('/register')}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.heroCtaText}>Start Your Journey</Text>
-          </TouchableOpacity>
-        )}
-        {isLoggedIn && (
-          <TouchableOpacity
-            style={styles.heroCta}
-            onPress={() => router.push('/tourist')}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.heroCtaText}>Go to Dashboard</Text>
-          </TouchableOpacity>
-        )}
+
+  if (isLoggedIn) {
+    const dashboardRoute = userRole === 'artist' ? '/artist/(tabs)/profile' : '/tourist';
+
+    return (
+      <View style={styles.hero}>
+        <View style={styles.heroOverlay}>
+          <Text style={styles.heroTag}>🇱🇰 Discover Sri Lanka</Text>
+          <Text style={styles.heroTitle}>Handcrafted{'\n'}with Heart</Text>
+          <Text style={styles.heroSubtitle}>
+            Explore authentic Sri Lankan crafts, meet master artisans, and book hands-on workshop
+            experiences across the island.
+          </Text>
+          {!isLoggedIn && (
+            <TouchableOpacity
+              style={styles.heroCta}
+              onPress={() => router.push('/register')}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.heroCtaText}>Start Your Journey</Text>
+            </TouchableOpacity>
+          )}
+          {isLoggedIn && (
+            <TouchableOpacity
+              style={styles.heroCta}
+              onPress={() => router.push(dashboardRoute as any)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.heroCtaText}>Go to Dashboard</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
-    </View>
-  );
+    );
+  }
 }
 
 // ── Craft Categories ──
@@ -135,20 +143,24 @@ function HowItWorksSection() {
 }
 
 // ── CTA Section ──
-function CTASection({ isLoggedIn }: { isLoggedIn: boolean }) {
+function CTASection({ isLoggedIn, userRole }: { isLoggedIn: boolean; userRole?: 'tourist' | 'artist' }) {
   const router = useRouter();
 
   if (isLoggedIn) {
+    const dashboardRoute = userRole === 'artist' ? '/artist/(tabs)/profile' : '/tourist';
+
     return (
       <View style={styles.ctaSection}>
         <LogoIcon size={48} />
         <Text style={styles.ctaTitle}>Welcome Back!</Text>
         <Text style={styles.ctaSubtitle}>
-          Continue your cultural journey. Browse artisans, manage bookings, or share your experiences.
+          {userRole === 'artist'
+            ? "Manage your crafts, bookings, and schedule your workshops with ease."
+            : "Continue your cultural journey. Browse artisans, manage bookings, or share your experiences."}
         </Text>
         <TouchableOpacity
           style={styles.ctaButton}
-          onPress={() => router.push('/tourist')}
+          onPress={() => router.push(dashboardRoute as any)}
           activeOpacity={0.8}
         >
           <Text style={styles.ctaButtonText}>Go to Dashboard</Text>
@@ -179,7 +191,7 @@ function CTASection({ isLoggedIn }: { isLoggedIn: boolean }) {
 }
 
 // ── Bottom Nav Bar (shown when logged in) ──
-const NAV_ITEMS = [
+const TOURIST_NAV_ITEMS = [
   { key: 'home', label: 'Home', icon: Home, route: '/tourist' },
   { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, route: '/tourist/dashboard' },
   { key: 'bookings', label: 'Bookings', icon: CalendarDays, route: '/tourist/bookings' },
@@ -188,12 +200,21 @@ const NAV_ITEMS = [
   { key: 'profile', label: 'Profile', icon: UserCircle, route: '/tourist/profile' },
 ];
 
-function BottomNavBar() {
+const ARTIST_NAV_ITEMS = [
+  { key: 'profile', label: 'Profile', icon: UserCircle, route: '/artist/profile' },
+  { key: 'crafts', label: 'Crafts', icon: Package, route: '/artist/crafts' },
+  { key: 'bookings', label: 'Bookings', icon: Calendar, route: '/artist/bookings' },
+  { key: 'reviews', label: 'Reviews', icon: Star, route: '/artist/reviews' },
+  { key: 'schedule', label: 'Schedule', icon: Home, route: '/artist/schedule' },
+];
+
+function BottomNavBar({ userRole }: { userRole: 'tourist' | 'artist' }) {
   const router = useRouter();
+  const items = userRole === 'artist' ? ARTIST_NAV_ITEMS : TOURIST_NAV_ITEMS;
 
   return (
     <View style={styles.bottomNav}>
-      {NAV_ITEMS.map((item) => {
+      {items.map((item) => {
         const IconComp = item.icon;
         return (
           <TouchableOpacity
@@ -237,6 +258,8 @@ export default function HomeScreen() {
   const profilePicUrl = tourist?.profilePicUrl || artist?.profilePicUrl;
   const initials = tourist?.initials || artist?.initials || '?';
 
+  const userRole = artist ? 'artist' : 'tourist';
+
   if (loading) {
     return (
       <SafeAreaView style={[styles.safe, { justifyContent: 'center', alignItems: 'center' }]}>
@@ -257,7 +280,7 @@ export default function HomeScreen() {
 
         {isLoggedIn ? (
           <TouchableOpacity
-            onPress={() => router.push('/tourist/profile' as any)}
+            onPress={() => router.push((userRole === 'artist' ? '/artist/profile' : '/tourist/profile') as any)}
             activeOpacity={0.8}
           >
             <ProfileAvatar profilePicUrl={profilePicUrl} initials={initials} />
@@ -278,14 +301,14 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: isLoggedIn ? 80 : 40 }}
       >
-        <HeroSection isLoggedIn={isLoggedIn} />
+        <HeroSection isLoggedIn={isLoggedIn} userRole={userRole} />
         <CraftCategoriesSection />
         <HowItWorksSection />
-        <CTASection isLoggedIn={isLoggedIn} />
+        <CTASection isLoggedIn={isLoggedIn} userRole={userRole} />
       </ScrollView>
 
       {/* Bottom Nav Bar - only when logged in */}
-      {isLoggedIn && <BottomNavBar />}
+      {isLoggedIn && <BottomNavBar userRole={userRole} />}
     </SafeAreaView>
   );
 }

@@ -10,6 +10,7 @@ import { useAuth } from '../../../src/context/AuthContext';
 import { getBlogs, getBlog, likeBlog, getMyBlogs } from '../../../src/services/api';
 import { TRENDING_TAGS } from '../../../src/constants/touristConstants';
 import { Heart, Clock, Plus, X, ChevronRight, Play } from 'lucide-react-native';
+import { BatikBackground } from '../../../src/components/BatikBackground';
 
 const { width } = Dimensions.get('window');
 const CARD_IMAGE_HEIGHT = 200;
@@ -236,7 +237,8 @@ export default function TouristBlogsScreen() {
   };
 
   return (
-    <SafeAreaView style={s.safe} edges={['top']}>
+    <BatikBackground>
+      <SafeAreaView style={s.safe} edges={['top']}>
       {/* Header */}
       <View style={s.header}>
         <Text style={s.headerTitle}>Blogs</Text>
@@ -366,12 +368,13 @@ export default function TouristBlogsScreen() {
         onLike={() => readBlog && handleLike(readBlog._id)}
         onClose={() => setReadVisible(false)}
       />
-    </SafeAreaView>
+      </SafeAreaView>
+    </BatikBackground>
   );
 }
 
 const s = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#F6F3EE' },
+  safe: { flex: 1, backgroundColor: 'transparent' },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 12 },
   headerTitle: { fontSize: 24, fontWeight: '800', color: '#2F5D50' },
   newBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: '#C65D3B', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 12 },

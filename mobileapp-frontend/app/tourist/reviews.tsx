@@ -8,6 +8,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '../../src/context/AuthContext';
 import { getReviews } from '../../src/services/api';
 import { ArrowLeft, Star, MessageSquare, Calendar } from 'lucide-react-native';
+import { BatikBackground } from '../../src/components/BatikBackground';
 
 const { width } = Dimensions.get('window');
 
@@ -65,7 +66,8 @@ export default function MyReviewsScreen() {
   };
 
   return (
-    <SafeAreaView style={s.safe} edges={['top']}>
+    <BatikBackground>
+      <SafeAreaView style={s.safe} edges={['top']}>
       {/* Header */}
       <View style={s.header}>
         <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
@@ -140,15 +142,16 @@ export default function MyReviewsScreen() {
           ))
         )}
       </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </BatikBackground>
   );
 }
 
 const s = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#F6F3EE' },
+  safe: { flex: 1, backgroundColor: 'transparent' },
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 16, paddingVertical: 12, backgroundColor: '#fff',
+    paddingHorizontal: 16, paddingVertical: 12, backgroundColor: 'transparent',
     borderBottomWidth: 1, borderBottomColor: '#F0F0F0',
   },
   backBtn: { width: 36, height: 36, borderRadius: 12, backgroundColor: '#EBF4F1', alignItems: 'center', justifyContent: 'center' },

@@ -10,6 +10,7 @@ import { useAuth } from '../../../src/context/AuthContext';
 import { getBlog, updateBlog, getArtists } from '../../../src/services/api';
 import { TRENDING_TAGS } from '../../../src/constants/touristConstants';
 import { ArrowLeft, X, ImagePlus, ChevronDown, Save, FileText } from 'lucide-react-native';
+import { BatikBackground } from '../../../src/components/BatikBackground';
 
 const { width } = Dimensions.get('window');
 
@@ -129,13 +130,22 @@ export default function TouristBlogEditScreen() {
   };
 
   if (loading) {
-    return <SafeAreaView style={st.safe}><View style={st.center}><ActivityIndicator size="large" color="#C65D3B" /></View></SafeAreaView>;
+    return (
+      <BatikBackground>
+        <SafeAreaView style={st.safe}>
+          <View style={st.center}>
+            <ActivityIndicator size="large" color="#C65D3B" />
+          </View>
+        </SafeAreaView>
+      </BatikBackground>
+    );
   }
 
   const filtered = workshopsList.filter(w => w.name.toLowerCase().includes(workshopSearch.toLowerCase()));
 
   return (
-    <SafeAreaView style={st.safe} edges={['top']}>
+    <BatikBackground>
+      <SafeAreaView style={st.safe} edges={['top']}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
         <View style={st.header}>
           <TouchableOpacity onPress={() => router.back()} style={st.backBtn}><ArrowLeft size={20} color="#2F5D50" /></TouchableOpacity>
@@ -221,14 +231,15 @@ export default function TouristBlogEditScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </BatikBackground>
   );
 }
 
 const st = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#F6F3EE' },
+  safe: { flex: 1, backgroundColor: 'transparent' },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: 'transparent', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   backBtn: { width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   headerTitle: { fontSize: 18, fontWeight: '800', color: '#2F5D50' },
   scroll: { padding: 20, paddingBottom: 40 },

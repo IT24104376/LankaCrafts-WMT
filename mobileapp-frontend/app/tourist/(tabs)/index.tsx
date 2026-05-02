@@ -9,6 +9,7 @@ import MapView, { Marker } from 'react-native-maps';
 import { useAuth } from '../../../src/context/AuthContext';
 import { getArtists, getFeaturedArtist } from '../../../src/services/api';
 import { Search, MapPin, Star, Heart } from 'lucide-react-native';
+import { BatikBackground } from '../../../src/components/BatikBackground';
 
 const { width } = Dimensions.get('window');
 
@@ -45,7 +46,8 @@ export default function TouristHomeScreen() {
   }, []);
 
   return (
-    <SafeAreaView style={s.safe} edges={['top']}>
+    <BatikBackground>
+      <SafeAreaView style={s.safe} edges={['top']}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 32 }}>
         {/* Welcome */}
         <View style={s.welcome}>
@@ -130,7 +132,7 @@ export default function TouristHomeScreen() {
                 <Text style={s.sectionTag}>ARTISANS</Text>
                 <Text style={s.sectionTitle}>Discover Artisans</Text>
               </View>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push('/tourist/browse')}>
                 <Text style={s.seeAll}>See All</Text>
               </TouchableOpacity>
             </View>
@@ -185,7 +187,8 @@ export default function TouristHomeScreen() {
 
         {loading && <ActivityIndicator size="large" color="#C65D3B" style={{ marginTop: 24 }} />}
       </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </BatikBackground>
   );
 }
 
@@ -195,7 +198,7 @@ const s = StyleSheet.create({
   bookBannerTitle: { fontSize: 20, fontWeight: '800', color: '#fff', marginBottom: 4 },
   bookBannerSub: { fontSize: 12, color: 'rgba(255,255,255,0.8)' },
   bookBannerIcon: { width: 56, height: 56, borderRadius: 16, backgroundColor: 'rgba(255,255,255,0.2)', alignItems: 'center', justifyContent: 'center' },
-  safe: { flex: 1, backgroundColor: '#F6F3EE' },
+  safe: { flex: 1, backgroundColor: 'transparent' },
   welcome: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 16, paddingBottom: 8 },
   welcomeHi: { fontSize: 13, color: '#9CA3AF' },
   welcomeName: { fontSize: 22, fontWeight: '800', color: '#2F5D50' },
