@@ -13,6 +13,7 @@ import {
   Settings, Edit3, MapPin, Globe, Calendar, BookOpen,
   Heart, Star, LogOut, ChevronRight, Mail, CreditCard,
 } from 'lucide-react-native';
+import { BatikBackground } from '../../../src/components/BatikBackground';
 
 const { width } = Dimensions.get('window');
 
@@ -73,8 +74,9 @@ export default function TouristProfileScreen() {
   }
 
   return (
-    <SafeAreaView style={s.safe} edges={['top']}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+    <BatikBackground>
+      <SafeAreaView style={s.safe} edges={['top']}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
         {/* Header bar */}
         <View style={s.headerBar}>
           <Text style={s.headerTitle}>Profile</Text>
@@ -194,7 +196,7 @@ export default function TouristProfileScreen() {
             <Text style={s.sectionTitle}>My Wishlist</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               {wishlist.map((w) => (
-                <TouchableOpacity key={w.id} style={s.wishCard} activeOpacity={0.8} onPress={() => router.push(`/artist/${w.id}`)}>
+                <TouchableOpacity key={w.id} style={s.wishCard} activeOpacity={0.8} onPress={() => router.push(`/tourist/artisan/${w.id}`)}>
                   <Image source={{ uri: w.img }} style={s.wishImg} />
                   <View style={s.wishInfo}>
                     <Text style={s.wishName} numberOfLines={1}>{w.name}</Text>
@@ -213,16 +215,31 @@ export default function TouristProfileScreen() {
             <Text style={s.sectionTitle}>My Blogs</Text>
             {blogs.slice(0, 3).map((b) => (
               <View key={b._id} style={s.blogMiniCard}>
-                <View style={[s.blogStatus, { backgroundColor: b.status === 'draft' ? '#FEF9C3' : '#DCFCE7' }]}>
-                  <Text style={[s.blogStatusText, { color: b.status === 'draft' ? '#CA8A04' : '#16A34A' }]}>{b.status}</Text>
+                <View style={s.blogMiniImageContainer}>
+                  {b.media?.[0]?.url ? (
+                    <Image source={{ uri: b.media[0].url }} style={s.blogMiniImage} resizeMode="cover" />
+                  ) : b.imageUrl ? (
+                    <Image source={{ uri: b.imageUrl }} style={s.blogMiniImage} resizeMode="cover" />
+                  ) : (
+                    <View style={s.blogMiniImageFallback}>
+                      <Text style={{ color: '#fff', fontSize: 10, fontWeight: '700' }}>Blog</Text>
+                    </View>
+                  )}
                 </View>
+
                 <View style={s.blogMiniContent}>
-                  <Text style={s.blogMiniTitle} numberOfLines={1}>{b.title}</Text>
+                  <Text style={s.blogMiniTitle} numberOfLines={2}>{b.title}</Text>
                   <Text style={s.blogMiniDate}>{new Date(b.createdAt).toLocaleDateString()}</Text>
                 </View>
-                <TouchableOpacity onPress={() => router.push(`/tourist/blogs/edit/${b._id}`)}>
-                  <Edit3 size={16} color="#C65D3B" />
-                </TouchableOpacity>
+
+                <View style={{ alignItems: 'flex-end', justifyContent: 'space-between', height: 60 }}>
+                  <View style={[s.blogStatus, { backgroundColor: b.status === 'draft' ? '#FEF9C3' : '#DCFCE7' }]}>
+                    <Text style={[s.blogStatusText, { color: b.status === 'draft' ? '#CA8A04' : '#16A34A' }]}>{b.status}</Text>
+                  </View>
+                  <TouchableOpacity onPress={() => router.push(`/tourist/blog-edit/${b._id}`)}>
+                    <Edit3 size={16} color="#C65D3B" />
+                  </TouchableOpacity>
+                </View>
               </View>
             ))}
           </View>
@@ -258,18 +275,19 @@ export default function TouristProfileScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </BatikBackground>
   );
 }
 
 const s = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#F6F3EE' },
+  safe: { flex: 1, backgroundColor: 'transparent' },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   headerBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 12 },
   headerTitle: { fontSize: 24, fontWeight: '800', color: '#2F5D50' },
   headerActions: { flexDirection: 'row', gap: 12 },
   headerBtn: { width: 40, height: 40, borderRadius: 12, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#F0F0F0' },
-  banner: { alignItems: 'center', paddingVertical: 24, backgroundColor: '#fff', marginHorizontal: 16, borderRadius: 24, borderWidth: 1, borderColor: '#F0F0F0' },
+  banner: { alignItems: 'center', paddingVertical: 24, backgroundColor: '#FDDCD2', marginHorizontal: 16, borderRadius: 24, borderWidth: 1, borderColor: '#F0F0F0' },
   avatarWrap: { width: 80, height: 80, borderRadius: 24, overflow: 'hidden', marginBottom: 12 },
   avatarImg: { width: 80, height: 80, borderRadius: 24 },
   avatarFallback: { width: 80, height: 80, borderRadius: 24, backgroundColor: '#C65D3B', alignItems: 'center', justifyContent: 'center' },
@@ -306,10 +324,13 @@ const s = StyleSheet.create({
   wishName: { fontSize: 12, fontWeight: '700', color: '#1E1E1E', marginBottom: 2 },
   wishArtisan: { fontSize: 10, color: '#9CA3AF', marginBottom: 4 },
   wishLoc: { fontSize: 10, color: '#1A6B6B', fontWeight: '600' },
-  blogMiniCard: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#fff', borderRadius: 16, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#F0F0F0' },
+  blogMiniCard: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#fff', borderRadius: 16, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#F0F0F0', minHeight: 90 },
+  blogMiniImageContainer: { width: 60, height: 60, borderRadius: 10, overflow: 'hidden' },
+  blogMiniImage: { width: '100%', height: '100%' },
+  blogMiniImageFallback: { width: '100%', height: '100%', backgroundColor: '#2F5D50', alignItems: 'center', justifyContent: 'center' },
   blogStatus: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
   blogStatusText: { fontSize: 9, fontWeight: '800', textTransform: 'uppercase' },
-  blogMiniContent: { flex: 1 },
+  blogMiniContent: { flex: 1, height: 60, justifyContent: 'space-between' },
   blogMiniTitle: { fontSize: 14, fontWeight: '700', color: '#1E1E1E', marginBottom: 2 },
   blogMiniDate: { fontSize: 11, color: '#9CA3AF' },
 });

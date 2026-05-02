@@ -274,7 +274,7 @@ function InputField({ icon, label, placeholder, value, onChangeText, secure, key
 }
 
 const st = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#ddede7' },
+  safe: { flex: 1, backgroundColor: 'transparent' },
   scroll: { padding: 20, paddingBottom: 48 },
   stepRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 },
   stepItem: { alignItems: 'center', flex: 1 },

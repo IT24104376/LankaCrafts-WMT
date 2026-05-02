@@ -155,7 +155,7 @@ export default function TouristLoginScreen() {
 }
 
 const s = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#ddede7' },
+  safe: { flex: 1, backgroundColor: 'transparent' },
   scroll: { flexGrow: 1, justifyContent: 'center', padding: 24, paddingVertical: 40 },
   backBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 16 },
   backText: { fontSize: 14, fontWeight: '600', color: '#C65D3B' },

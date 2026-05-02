@@ -96,15 +96,15 @@ app.use((err, _req, res, _next) => {
 });
 
 // ── MongoDB connection + server start ─────────────────────────────────────────
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 const MONGO_URI = process.env.MONGO_URI;
 
 mongoose
   .connect(MONGO_URI)
   .then(() => {
     console.log(` MongoDB connected...`);
-    app.listen(PORT, () => {
-      console.log(` LankaCrafts Tourist API running on http://localhost:${PORT}`);
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(` LankaCrafts Tourist API running on http://0.0.0.0:${PORT}`);
       console.log(`  Health: http://localhost:${PORT}/health`);
     });
   })

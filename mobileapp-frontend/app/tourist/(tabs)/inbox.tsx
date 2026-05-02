@@ -19,6 +19,7 @@ import {
   type ChatMessage,
   chatApi,
 } from '../../../src/services/chatApi';
+import { BatikBackground } from '../../../src/components/BatikBackground';
 
 const PALETTE = ['#C65D3B', '#2F5D50', '#C9A227', '#1A6B6B', '#8B5E3C'];
 
@@ -365,7 +366,8 @@ export default function TouristInboxScreen() {
   const selectedConversation = activeConversation;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <BatikBackground>
+      <SafeAreaView style={styles.safeArea}>
       {showList ? (
         <View style={styles.container}>
           <View style={styles.headerBlock}>
@@ -592,14 +594,15 @@ export default function TouristInboxScreen() {
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
         </KeyboardAvoidingView>
       )}
-    </SafeAreaView>
+      </SafeAreaView>
+    </BatikBackground>
   );
 }
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F6F3EE',
+    backgroundColor: 'transparent',
   },
   container: {
     flex: 1,
