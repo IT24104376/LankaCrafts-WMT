@@ -2,15 +2,17 @@ import { Review } from '../models/Review.js';
 import Tourist from '../models/Tourist.js';
 
 const getActor = (req) => ({
-  email: String(req.headers['x-user-email'] || req.user?.email || req.admin?.email || '')
+  email: String(req.admin?.email || req.user?.email || req.headers['x-user-email'] || '')
     .trim()
     .toLowerCase(),
-  role: String(req.headers['x-user-role'] || req.user?.role || req.admin?.role || '').trim().toLowerCase(),
-  username: String(req.headers['x-username'] || req.user?.username || req.admin?.name || '')
+  role: String(req.admin?.role || req.user?.role || req.headers['x-user-role'] || '').trim().toLowerCase(),
+  username: String(req.admin?.name || req.user?.username || req.headers['x-username'] || '')
     .trim()
     .toLowerCase(),
   artistName: String(req.headers['x-artist-name'] || '').trim()
 });
+
+const isAdminRole = (role = '') => ['admin', 'super_admin'].includes(String(role).trim().toLowerCase());
 
 const initialsFrom = (value) =>
   String(value || '')
@@ -283,7 +285,7 @@ export const deleteReview = async (req, res) => {
   if (!actor.email || !actor.role) {
     return res.status(401).json({ message: 'Please log in first.' });
   }
-  const isAdmin = actor.role === 'admin';
+  const isAdmin = isAdminRole(actor.role);
   const isOwner = review.authorEmail === actor.email;
   if (!isAdmin && !isOwner) {
     return res.status(403).json({ message: 'You can delete only your own reviews.' });
@@ -325,7 +327,7 @@ export const markHelpful = async (req, res) => {
 
 export const moderateReview = async (req, res) => {
   const actor = getActor(req);
-  if (actor.role !== 'admin') {
+  if (!isAdminRole(actor.role)) {
     return res.status(403).json({ message: 'Only admins can moderate reviews.' });
   }
   const { action, flagReason = '' } = req.body;

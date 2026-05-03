@@ -11,12 +11,12 @@ import {
 } from 'lucide-react-native';
 import { getArtisans, updateArtisanStatus } from '../../../src/api/adminApi';
 
-type Status = 'all' | 'pending' | 'verified' | 'rejected';
+type Status = 'all' | 'pending' | 'active' | 'deactivated';
 
 const STATUS_CONFIG = {
-  pending:  { label: 'Pending',  bg: '#FEF3C7', text: '#92400E', dot: '#F59E0B' },
-  verified: { label: 'Verified', bg: '#D1FAE5', text: '#065F46', dot: '#10B981' },
-  rejected: { label: 'Rejected', bg: '#FEE2E2', text: '#7F1D1D', dot: '#EF4444' },
+  pending: { label: 'Pending', backgroundColor: '#FEF3C7', textColor: '#92400E', dotColor: '#F59E0B' },
+  active: { label: 'Verified', backgroundColor: '#D1FAE5', textColor: '#065F46', dotColor: '#10B981' },
+  deactivated: { label: 'Rejected', backgroundColor: '#FEE2E2', textColor: '#7F1D1D', dotColor: '#EF4444' },
 };
 
 function StatusBadge({ status }: { status: 'pending' | 'verified' | 'rejected' }) {
@@ -152,17 +152,17 @@ export default function ArtisanVerificationScreen() {
 
   const handleApprove = async (id: string) => {
     try {
-      await updateArtisanStatus(id, 'verified');
-      setArtisans(prev => prev.map(a => a._id === id ? { ...a, status: 'verified' } : a));
-      setSelected((prev: any) => prev?._id === id ? { ...prev, status: 'verified' } : prev);
+      await updateArtisanStatus(id, 'active');
+      setArtisans(prev => prev.map(a => a._id === id ? { ...a, status: 'active' } : a));
+      setSelected((prev: any) => prev?._id === id ? { ...prev, status: 'active' } : prev);
     } catch { Alert.alert('Error', 'Failed to approve.'); }
   };
 
   const handleReject = async (id: string) => {
     try {
-      await updateArtisanStatus(id, 'rejected');
-      setArtisans(prev => prev.map(a => a._id === id ? { ...a, status: 'rejected' } : a));
-      setSelected((prev: any) => prev?._id === id ? { ...prev, status: 'rejected' } : prev);
+      await updateArtisanStatus(id, 'deactivated');
+      setArtisans(prev => prev.map(a => a._id === id ? { ...a, status: 'deactivated' } : a));
+      setSelected((prev: any) => prev?._id === id ? { ...prev, status: 'deactivated' } : prev);
     } catch { Alert.alert('Error', 'Failed to reject.'); }
   };
 
@@ -178,8 +178,8 @@ export default function ArtisanVerificationScreen() {
   const counts = {
     all: artisans.length,
     pending: artisans.filter(a => a.status === 'pending').length,
-    verified: artisans.filter(a => a.status === 'verified').length,
-    rejected: artisans.filter(a => a.status === 'rejected').length,
+    active: artisans.filter(a => a.status === 'active').length,
+    deactivated: artisans.filter(a => a.status === 'deactivated').length,
   };
 
   return (
@@ -202,7 +202,7 @@ export default function ArtisanVerificationScreen() {
 
       {/* Filter tabs */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.filterScroll} contentContainerStyle={s.filterRow}>
-        {(['all', 'pending', 'verified', 'rejected'] as Status[]).map(st => (
+        {(['all', 'pending', 'active', 'deactivated'] as Status[]).map(st => (
           <TouchableOpacity
             key={st}
             style={[s.filterTab, statusFilter === st && s.filterTabActive]}
@@ -253,12 +253,12 @@ export default function ArtisanVerificationScreen() {
                     <TouchableOpacity style={s.iconBtn} onPress={() => setSelected(artisan)}>
                       <Eye size={14} color="#2F5D50" />
                     </TouchableOpacity>
-                    {artisan.status !== 'verified' && (
+                    {artisan.status !== 'active' && (
                       <TouchableOpacity style={[s.iconBtn, s.greenBtn]} onPress={() => handleApprove(artisan._id)}>
                         <CheckCircle size={14} color="#10B981" />
                       </TouchableOpacity>
                     )}
-                    {artisan.status !== 'rejected' && (
+                    {artisan.status !== 'deactivated' && (
                       <TouchableOpacity style={[s.iconBtn, s.redBtn]} onPress={() => handleReject(artisan._id)}>
                         <XCircle size={14} color="#EF4444" />
                       </TouchableOpacity>

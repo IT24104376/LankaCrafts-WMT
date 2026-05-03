@@ -117,7 +117,7 @@ export default function TouristManagementScreen() {
       const list = (res.data?.data || res.data?.tourists || []).map((t: any) => ({
         ...t,
         fullName: t.fullName || t.name || '',
-        status: t.status || 'active',
+        status: (t.status || 'active').toLowerCase() === 'suspended' ? 'suspended' : 'active',
         initials: (t.fullName || t.name || 'T').split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase(),
       }));
       setTourists(list);

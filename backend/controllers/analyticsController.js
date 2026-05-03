@@ -2,6 +2,49 @@ import Artist from '../models/Artist.js';
 import Tourist from '../models/Tourist.js';
 import Booking from '../models/workshopBooking.js';
 
+const parsePeriod = (value) => {
+  const period = String(value || 'daily').toLowerCase();
+  if (['daily', 'weekly', 'monthly'].includes(period)) return period;
+  return 'daily';
+};
+
+const getActivityGrouping = (period) => {
+  if (period === 'monthly') {
+    return {
+      dateExpr: {
+        $dateToString: { format: '%Y-%m', date: '$createdAt' }
+      },
+      limit: 6
+    };
+  }
+
+  if (period === 'weekly') {
+    return {
+      dateExpr: {
+        $concat: [
+          { $toString: { $isoWeekYear: '$createdAt' } },
+          '-W',
+          {
+            $cond: [
+              { $lt: [{ $isoWeek: '$createdAt' }, 10] },
+              { $concat: ['0', { $toString: { $isoWeek: '$createdAt' } }] },
+              { $toString: { $isoWeek: '$createdAt' } }
+            ]
+          }
+        ]
+      },
+      limit: 8
+    };
+  }
+
+  return {
+    dateExpr: {
+      $dateToString: { format: '%Y-%m-%d', date: '$createdAt' }
+    },
+    limit: 7
+  };
+};
+
 export async function getOverview(req, res, next) {
   try {
     const [totalArtisans, totalTourists, activeArtists, pendingArtists] = await Promise.all([
@@ -26,18 +69,24 @@ export async function getOverview(req, res, next) {
 
 export async function getActivityChart(req, res, next) {
   try {
+    const period = parsePeriod(req.query.period);
+    const { dateExpr, limit } = getActivityGrouping(period);
+
     const bookings = await Booking.aggregate([
       {
         $group: {
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          _id: dateExpr,
           bookings: { $sum: 1 }
         }
       },
       { $sort: { _id: -1 } },
-      { $limit: 7 }
+      { $limit: limit }
     ]);
-    const data = bookings.map(b => ({ label: b._id, users: 0, bookings: b.bookings })).reverse();
-    res.json({ success: true, data });
+
+    const data = bookings
+      .map((b) => ({ label: b._id, users: 0, bookings: b.bookings }))
+      .reverse();
+    res.json({ success: true, period, data });
   } catch (err) {
     next(err);
   }

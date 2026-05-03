@@ -186,3 +186,54 @@ export const verifyAnyFirebaseToken = async (req, res, next) => {
     return res.status(500).json({ error: 'Authentication error.' });
   }
 };
+
+/**
+ * Middleware: protectUserOrAdmin
+ * Allows authenticated app users (tourist/artist) OR admins.
+ */
+export const protectUserOrAdmin = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.toLowerCase().startsWith('bearer ')) {
+    return res.status(401).json({
+      error: 'No token provided. Authorization header must start with "Bearer ".'
+    });
+  }
+
+  const token = authHeader.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ error: 'Malformed authorization header.' });
+  }
+
+  let decoded;
+  try {
+    decoded = jwt.verify(token, process.env.JWT_SECRET);
+  } catch (err) {
+    return res.status(401).json({ error: 'Invalid or expired token.' });
+  }
+
+  if (decoded.role === 'admin' || decoded.role === 'super_admin') {
+    req.admin = decoded;
+    return next();
+  }
+
+  try {
+    let user;
+    if (decoded.role === 'tourist') {
+      user = await Tourist.findById(decoded.id);
+    } else if (decoded.role === 'artist') {
+      user = await Artist.findById(decoded.id);
+    }
+
+    if (!user || user.status !== 'active') {
+      return res.status(404).json({
+        error: 'User profile not found or deactivated.',
+      });
+    }
+
+    req.user = { uid: user._id, role: decoded.role, email: user.email };
+    return next();
+  } catch (err) {
+    console.error('Auth middleware error:', err.message);
+    return res.status(401).json({ error: 'Invalid or expired token.' });
+  }
+};
