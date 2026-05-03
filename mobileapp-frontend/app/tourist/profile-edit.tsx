@@ -13,9 +13,10 @@ import { ArrowLeft, Camera, Save, Check } from 'lucide-react-native';
 import { BatikBackground } from '../../src/components/BatikBackground';
 
 export default function TouristProfileEditScreen() {
-  const { tourist, refreshUser } = useAuth();
+  const { tourist, refreshUser, logout } = useAuth();
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const [deactivating, setDeactivating] = useState(false);
   const [form, setForm] = useState({
     fullName: tourist?.fullName || '',
     callingName: tourist?.callingName || '',
@@ -86,6 +87,33 @@ export default function TouristProfileEditScreen() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleDeleteAccount = async () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to deactivate your account? This action cannot be undone easily.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            setDeactivating(true);
+            try {
+              await updateProfile({ status: 'deactivated' });
+              await logout();
+              Alert.alert('Account Deleted', 'Your account has been deactivated.');
+              router.replace('/');
+            } catch (err: any) {
+              Alert.alert('Error', err?.message || 'Failed to deactivate account.');
+            } finally {
+              setDeactivating(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -164,6 +192,22 @@ export default function TouristProfileEditScreen() {
               </TouchableOpacity>
             ))}
           </View>
+
+          {/* Delete Account */}
+          <View style={s.dangerZone}>
+            <Text style={s.dangerTitle}>Danger Zone</Text>
+            <TouchableOpacity 
+              style={[s.deleteBtn, deactivating && { opacity: 0.5 }]} 
+              onPress={handleDeleteAccount}
+              disabled={deactivating}
+            >
+              {deactivating ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Text style={s.deleteBtnText}>Delete Account</Text>
+              )}
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
       </SafeAreaView>
@@ -201,4 +245,8 @@ const s = StyleSheet.create({
   chipSel: { backgroundColor: '#C65D3B', borderColor: '#C65D3B' },
   chipText: { fontSize: 13, color: '#1E1E1E', fontWeight: '500' },
   chipTextSel: { color: '#fff' },
+  dangerZone: { marginTop: 40, borderTopWidth: 1, borderTopColor: '#F0F0F0', paddingTop: 24 },
+  dangerTitle: { fontSize: 16, fontWeight: '700', color: '#DC2626', marginBottom: 12 },
+  deleteBtn: { backgroundColor: '#DC2626', borderRadius: 14, paddingVertical: 14, alignItems: 'center', justifyContent: 'center' },
+  deleteBtnText: { color: '#fff', fontSize: 14, fontWeight: '700' },
 });

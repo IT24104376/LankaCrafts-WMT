@@ -48,114 +48,114 @@ export default function TouristHomeScreen() {
   return (
     <BatikBackground>
       <SafeAreaView style={s.safe} edges={['top']}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 32 }}>
-        {/* Welcome */}
-        <View style={s.welcome}>
-          <View>
-            <Text style={s.welcomeHi}>Welcome back,</Text>
-            <Text style={s.welcomeName}>{tourist?.callingName || 'Explorer'} 👋</Text>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 32 }}>
+          {/* Welcome */}
+          <View style={s.welcome}>
+            <View>
+              <Text style={s.welcomeHi}>Welcome back,</Text>
+              <Text style={s.welcomeName}>{tourist?.callingName || 'Explorer'} 👋</Text>
+            </View>
+            <TouchableOpacity style={s.avatar} onPress={() => router.push('/tourist/(tabs)/profile')}>
+              {tourist?.profilePicUrl ? (
+                <Image source={{ uri: tourist.profilePicUrl }} style={s.avatarImg} />
+              ) : (
+                <Text style={s.avatarText}>{tourist?.initials || '?'}</Text>
+              )}
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity style={s.avatar} onPress={() => router.push('/tourist/(tabs)/profile')}>
-            {tourist?.profilePicUrl ? (
-              <Image source={{ uri: tourist.profilePicUrl }} style={s.avatarImg} />
-            ) : (
-              <Text style={s.avatarText}>{tourist?.initials || '?'}</Text>
-            )}
+
+          {/* Search */}
+          <TouchableOpacity style={s.searchBar} activeOpacity={0.8}>
+            <Search size={18} color="#9CA3AF" />
+            <Text style={s.searchPlaceholder}>Search artisans, crafts, workshops...</Text>
           </TouchableOpacity>
-        </View>
 
-        {/* Search */}
-        <TouchableOpacity style={s.searchBar} activeOpacity={0.8}>
-          <Search size={18} color="#9CA3AF" />
-          <Text style={s.searchPlaceholder}>Search artisans, crafts, workshops...</Text>
-        </TouchableOpacity>
-
-        {/* Book a Workshop Banner */}
-        <TouchableOpacity
-          style={s.bookBanner}
-          onPress={() => router.push('/tourist/bookings/book-workshop')}
-          activeOpacity={0.85}>
-          <View>
-            <Text style={s.bookBannerTag}>EXPERIENCE SRI LANKA</Text>
-            <Text style={s.bookBannerTitle}>Book a Workshop</Text>
-            <Text style={s.bookBannerSub}>Learn directly from master artisans</Text>
-          </View>
-          <View style={s.bookBannerIcon}>
-            <Text style={{ fontSize: 32 }}></Text>
-          </View>
-        </TouchableOpacity>
-
-        {/* Craft Categories */}
-        <View style={s.section}>
-          <Text style={s.sectionTag}>EXPLORE</Text>
-          <Text style={s.sectionTitle}>Craft Categories</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {CRAFTS.map(c => (
-              <TouchableOpacity key={c.label} style={s.craftCard} activeOpacity={0.7}>
-                <Text style={s.craftEmoji}>{c.emoji}</Text>
-                <Text style={s.craftLabel}>{c.label}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-
-        {/* Featured Artisan */}
-        {featured && (
-          <View style={s.section}>
-            <Text style={s.sectionTag}>FEATURED</Text>
-            <Text style={s.sectionTitle}>Artisan Spotlight</Text>
-            <View style={s.featuredCard}>
-              <View style={s.featuredTop}>
-                <View style={s.featuredAvatar}>
-                  <Text style={s.featuredInitials}>{featured.initials || '?'}</Text>
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={s.featuredName}>{featured.fullName || featured.callingName}</Text>
-                  <Text style={s.featuredCraft}>{featured.craftType}</Text>
-                  <View style={s.ratingRow}>
-                    <Star size={14} color="#C9A227" fill="#C9A227" />
-                    <Text style={s.ratingText}>{featured.rating?.toFixed(1) || '4.8'}</Text>
-                    <Text style={s.ratingCount}>({featured.reviewCount || 0} reviews)</Text>
-                  </View>
-                </View>
-              </View>
-              <Text style={s.featuredBio} numberOfLines={2}>{featured.bio}</Text>
+          {/* Book a Workshop Banner */}
+          <TouchableOpacity
+            style={s.bookBanner}
+            onPress={() => router.push('/tourist/bookings/book-workshop')}
+            activeOpacity={0.85}>
+            <View>
+              <Text style={s.bookBannerTag}>EXPERIENCE SRI LANKA</Text>
+              <Text style={s.bookBannerTitle}>Book a Workshop</Text>
+              <Text style={s.bookBannerSub}>Learn directly from master artisans</Text>
             </View>
-          </View>
-        )}
-
-        {/* Browse Artisans */}
-        {artists.length > 0 && (
-          <View style={s.section}>
-            <View style={s.sectionHeader}>
-              <View>
-                <Text style={s.sectionTag}>ARTISANS</Text>
-                <Text style={s.sectionTitle}>Discover Artisans</Text>
-              </View>
-              <TouchableOpacity onPress={() => router.push('/tourist/browse')}>
-                <Text style={s.seeAll}>See All</Text>
-              </TouchableOpacity>
+            <View style={s.bookBannerIcon}>
+              <Text style={{ fontSize: 32 }}></Text>
             </View>
+          </TouchableOpacity>
+
+          {/* Craft Categories */}
+          <View style={s.section}>
+            <Text style={s.sectionTag}>EXPLORE</Text>
+            <Text style={s.sectionTitle}>Craft Categories</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {artists.map((a: any, i: number) => (
-                <View key={a._id || i} style={s.artisanCard}>
-                  <View style={s.artisanAvatar}>
-                    <Text style={s.artisanInitials}>{a.initials || '?'}</Text>
-                  </View>
-                  <Text style={s.artisanName} numberOfLines={1}>{a.callingName || a.fullName}</Text>
-                  <Text style={s.artisanCraft} numberOfLines={1}>{a.craftType}</Text>
-                  <View style={s.artisanRating}>
-                    <Star size={12} color="#C9A227" fill="#C9A227" />
-                    <Text style={s.artisanRatingText}>{a.rating?.toFixed(1) || '–'}</Text>
-                  </View>
-                </View>
+              {CRAFTS.map(c => (
+                <TouchableOpacity key={c.label} style={s.craftCard} activeOpacity={0.7}>
+                  <Text style={s.craftEmoji}>{c.emoji}</Text>
+                  <Text style={s.craftLabel}>{c.label}</Text>
+                </TouchableOpacity>
               ))}
             </ScrollView>
           </View>
-        )}
 
-        {/* Interactive Map */}
-        <View style={s.section}>
+          {/* Featured Artisan */}
+          {featured && (
+            <View style={s.section}>
+              <Text style={s.sectionTag}>FEATURED</Text>
+              <Text style={s.sectionTitle}>Artisan Spotlight</Text>
+              <View style={s.featuredCard}>
+                <View style={s.featuredTop}>
+                  <View style={s.featuredAvatar}>
+                    <Text style={s.featuredInitials}>{featured.initials || '?'}</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={s.featuredName}>{featured.fullName || featured.callingName}</Text>
+                    <Text style={s.featuredCraft}>{featured.craftType}</Text>
+                    <View style={s.ratingRow}>
+                      <Star size={14} color="#C9A227" fill="#C9A227" />
+                      <Text style={s.ratingText}>{featured.rating?.toFixed(1) || '4.8'}</Text>
+                      <Text style={s.ratingCount}>({featured.reviewCount || 0} reviews)</Text>
+                    </View>
+                  </View>
+                </View>
+                <Text style={s.featuredBio} numberOfLines={2}>{featured.bio}</Text>
+              </View>
+            </View>
+          )}
+
+          {/* Browse Artisans */}
+          {artists.length > 0 && (
+            <View style={s.section}>
+              <View style={s.sectionHeader}>
+                <View>
+                  <Text style={s.sectionTag}>ARTISANS</Text>
+                  <Text style={s.sectionTitle}>Discover Artisans</Text>
+                </View>
+                <TouchableOpacity onPress={() => router.push('/tourist/browse')}>
+                  <Text style={s.seeAll}>See All</Text>
+                </TouchableOpacity>
+              </View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {artists.map((a: any, i: number) => (
+                  <View key={a._id || i} style={s.artisanCard}>
+                    <View style={s.artisanAvatar}>
+                      <Text style={s.artisanInitials}>{a.initials || '?'}</Text>
+                    </View>
+                    <Text style={s.artisanName} numberOfLines={1}>{a.callingName || a.fullName}</Text>
+                    <Text style={s.artisanCraft} numberOfLines={1}>{a.craftType}</Text>
+                    <View style={s.artisanRating}>
+                      <Star size={12} color="#C9A227" fill="#C9A227" />
+                      <Text style={s.artisanRatingText}>{a.rating?.toFixed(1) || '–'}</Text>
+                    </View>
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+
+          {/* Interactive Map */}
+          {/* <View style={s.section}>
           <Text style={s.sectionTag}>DISCOVER</Text>
           <Text style={s.sectionTitle}>Explore on the Map</Text>
           <View style={s.mapContainer}>
@@ -183,10 +183,10 @@ export default function TouristHomeScreen() {
                 ))}
             </MapView>
           </View>
-        </View>
+        </View> */}
 
-        {loading && <ActivityIndicator size="large" color="#C65D3B" style={{ marginTop: 24 }} />}
-      </ScrollView>
+          {loading && <ActivityIndicator size="large" color="#C65D3B" style={{ marginTop: 24 }} />}
+        </ScrollView>
       </SafeAreaView>
     </BatikBackground>
   );
