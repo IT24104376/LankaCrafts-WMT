@@ -6,6 +6,7 @@ import {
   Calendar,
   UserCircle,
   Star,
+  MessageSquare,
 } from 'lucide-react-native';
 
 
@@ -70,6 +71,13 @@ export default function ArtistTabsLayout() {
         options={{
           title: 'Reviews',
           tabBarIcon: ({ color, size }) => <Star size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="inbox"
+        options={{
+          title: 'Inbox',
+          tabBarIcon: ({ color, size }) => <MessageSquare size={size} color={color} />,
         }}
       />
       <Tabs.Screen
