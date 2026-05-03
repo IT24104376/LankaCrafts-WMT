@@ -35,7 +35,7 @@ export const moderateReview = (id: string, action: 'hide' | 'remove' | 'restore'
   api.post(`/reviews/${id}/moderate`, { action });
 
 export const deleteAdminReview = (id: string) =>
-  api.delete(`/reviews/${id}`);
+  api.delete(`/admin/reviews/${id}`);
 
 // ── Analytics ─────────────────────────────────────────────────────────────────
 export const getAnalyticsOverview = () =>

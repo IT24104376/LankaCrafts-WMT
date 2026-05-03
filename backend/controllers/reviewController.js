@@ -280,12 +280,12 @@ export const deleteReview = async (req, res) => {
   const actor = getActor(req);
   const review = await Review.findById(req.params.id);
   if (!review) return res.status(404).json({ message: 'Review not found' });
-  if (!actor.email || !actor.role) {
-    return res.status(401).json({ message: 'Please log in first.' });
-  }
-  const isAdmin = actor.role === 'admin';
-  const isOwner = review.authorEmail === actor.email;
+  const isAdmin = !!req.admin || actor.role === 'admin' || actor.role === 'super_admin';
+  const isOwner = actor.email && review.authorEmail === actor.email;
   if (!isAdmin && !isOwner) {
+    if (!actor.email && !actor.role) {
+      return res.status(401).json({ message: 'Please log in first.' });
+    }
     return res.status(403).json({ message: 'You can delete only your own reviews.' });
   }
 
@@ -325,7 +325,8 @@ export const markHelpful = async (req, res) => {
 
 export const moderateReview = async (req, res) => {
   const actor = getActor(req);
-  if (actor.role !== 'admin') {
+  const isAdmin = !!req.admin || actor.role === 'admin' || actor.role === 'super_admin';
+  if (!isAdmin) {
     return res.status(403).json({ message: 'Only admins can moderate reviews.' });
   }
   const { action, flagReason = '' } = req.body;

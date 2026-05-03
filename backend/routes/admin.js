@@ -3,6 +3,7 @@ import { protectAdmin } from '../middleware/auth.js';
 import * as artisanController from '../controllers/artisanController.js';
 import * as workshopController from '../controllers/workshopController.js';
 import * as touristController from '../controllers/touristController.js';
+import { deleteReview } from '../controllers/reviewController.js';
 
 const router = Router();
 
@@ -23,6 +24,9 @@ router.get('/workshops', workshopController.getWorkshops);
 router.get('/workshops/:id', workshopController.getWorkshop);
 router.patch('/workshops/:id/status', workshopController.updateWorkshopStatus);
 router.get('/workshops/bookings', workshopController.getBookings);
+
+// ── Reviews (admin delete) ────────────────────────────────────────────────────
+router.delete('/reviews/:id', deleteReview);
 
 export default router;
 

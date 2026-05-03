@@ -96,7 +96,7 @@ const touristSchema = new mongoose.Schema(
     // ── Status ─────────────────────────────────────────────────────────
     status: {
       type: String,
-      enum: ['active', 'deactivated'],
+      enum: ['active', 'suspended', 'deactivated'],
       default: 'active',
     },
 
