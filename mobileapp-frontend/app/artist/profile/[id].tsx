@@ -14,6 +14,8 @@ import {
   User, Contact, Mail, Lock, Check, Globe,
   CreditCard, Calendar, Home, MapPin, ArrowRight, ArrowLeft,
 } from 'lucide-react-native';
+import { ReviewSection } from '../../../src/components/ReviewSection';
+
 
 export default function ArtistProfileScreen() {
   const { artist, refreshArtist, logoutArtist } = useAuth();
@@ -301,16 +303,15 @@ export default function ArtistProfileScreen() {
               <Text style={s.statNum}>{profile?.workshopsConducted || 0}</Text>
               <Text style={s.statLabel}>Workshops</Text>
             </View>
-            <View style={s.statCard}>
-              <Text style={s.statNum}>{profile?.rating || 0}</Text>
-              <Text style={s.statLabel}>Avg Rating</Text>
-            </View>
-            <View style={s.statCard}>
-              <Text style={s.statNum}>{profile?.reviewCount || 0}</Text>
-              <Text style={s.statLabel}>Reviews</Text>
-            </View>
           </View>
+
+          {/* Review Section */}
+          <ReviewSection
+            context="artisan"
+            artisanName={form.fullName}
+          />
         </ScrollView>
+
       </BatikBackground>
     </View>
   );
